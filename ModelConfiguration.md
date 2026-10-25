@@ -113,7 +113,7 @@ ollama create gemma4:12b-nvfp4-largectx -f /tmp/Modelfile.gemma4-largectx
 |---|---|---|
 | 要求分析・設計・ADR・レビュー | gemma4:12b-nvfp4-analyst | Think ON（既定） |
 | 実装・コード生成・テスト生成 | qwen3.5:9b-nvfp4-coder | Think OFF 意図（OpenCode options.think: false） |
-| 横断解析・大規模リファクタ・ログ解析 | gemma4:12b-nvfp4-largectx | 必要時のみ、num_ctx 65536 |
+| 横断解析・大規模リファクタ・ログ解析 | gemma4:12b-nvfp4-largectx | 必要時のみ、num_ctx を 65536 に変更する |
 
 ## 6. 注意事項
 - ollama ps の CONTEXT は実際にロードされた KV バッファサイズを表す。
