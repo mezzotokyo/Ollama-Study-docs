@@ -12,11 +12,12 @@
 ---
 
 ## 2. 思考の指針（Analysis Principles）
-すべての分析フェーズにおいて、以下の5つの視点から多角的な分析を行う。これは、技術的な指針のみならず、ビジネスや社会への影響を考慮するための共通指進である。
+すべての分析フェーズにおいて、以下の5つの視点から多角的な分析を行う。これは、技術的な指針のみならず、ビジネスや社会への影響を考慮するための共通指針である。
+
 
 1.  **機能的要求 (Functional)**: 「何ができるか？」
 2.  **ユーザーの要求 (User Experience)**: 「誰が、どう使うか？」
-3.  **スポンサーの要求 (Business)**: 「ビジネス価値、優先順一、予算、納期」
+3.  **スポンサーの要求 (Business)**: 「ビジネス価値、優先順位、予算、納期」
 4.  **組織の要求 (Organizational)**: 「社内標準、技術スタック、セキュリティ、保守性」
 5.  **社会の要求 (Social/Legal)**: 「法令遵守、プライバシー、倫理、アクセシビリティ」
 
@@ -43,11 +44,11 @@
 ### 4.2 複雑性ティア（Complexity Tiers）
 効率を維持するため、以下の通りタスクを分類する。
 
-| Tier | Description | Workflow |
-| :--- | :--- | --- |
-| **Tier 1 (Minor)** | タイポ、スタイル修正、単純なバグ修正 | ADRをスキップし、直接 **Coder** に依頼する。 |
-| **Tier 2 (Standard)** | 新機能、リファクタリング、ロジック変更 | 標準の**開発フロー**を適用する。 |
-| **Tier 3 (Architectural)** | DB変更、新モジュール、セキュリティの抜本的修正 | **Analyst** の高度な関与（Deep-dive）を強化する。 |
+| Tier | Description | Workflow | Verification Requirements |
+| :--- | :--- | --- | --- |
+| **Tier 1 (Minor)** | タイポ、スタイル修正、単純なバグ修正 | ADRをスキップし、直接 **Coder** に依頼する。 | 基本的なUnit Test |
+| **Tier 2 (Standard)** | 新機能、リファクタリング、ロジック変更 | 標準の**開発フロー**を適用する。 | Unit/Integration Tests |
+| **Tier 3 (Architectural)** | DB変更、新モジュール、セキュリティの抜本的修正 | **Analyst** の高度な関与（Deep-dive）を強化する。 | **Multi-layer Verification (Unit, Integration, E2E, Performance/Side-effect)** |
 
 ---
 
@@ -60,10 +61,12 @@
 *   **フロー:**
     1.  **要求分析 (Cherry Studio Analyst)**: 5つの視点から要件を抽出。
     2.  **ADR作成 (Cherry Studio Analyst)**: 設計方針を決定。
-    3.  **Human Review & Approval**: 開発継続の承認。
-    4.  **アーキテクチャ設計 (Cherry Studio Analyst)**: システム構成を定義。
-    5.  **共通メモリ更新 (Markdown)**: 設計を反映。
-    6.  **実装 (OpenCode Coder)**: 実装とテスト生成。
+    3.  **検証計画 (Verification Planning)**: 各要求カテゴリ (Functional, UX, Business, Org, Social) に対する具体的な検証手法（テスト、レビュー、監査、プロトタイプ等）を定義し、検証マトリクスを作成。
+
+    4.  **Human Review & Approval**: 開発継続の承認。
+    5.  **アーキテクチャ設計 (Cherry Studio Analyst)**: システム構成を定義。
+    6.  **共通メモリ更新 (Markdown)**: 設計を反映。
+    7.  **実装 (OpenCode Coder)**: 実装とテスト生成。
 
 ```mermaid
 graph LR
@@ -82,9 +85,10 @@ graph LR
     1.  **現状分析 (OpenCode Analyst)**: 既存コードの依存関係と制約を徹底調査。
     2.  **影響範囲の特定 (OpenCode Analyst)**: 変更が及ぼす影響を特定。
     3.  **設計更新 (Cherry Studio Analyst)**: 既存の制約を考慮した設計を策定。
-    4.  **Human Review & Approval**: 開発継続の承認。
-    5.  **共通メモリ更新 (Markdown)**: 変更方針を反映。
-    6.  **実装 (OpenCode Coder)**: 整合性を保ちつつ実装。
+    4.  **検証計画 (Verification Planning)**: 各要求カテゴリ (Functional, UX, Business, Org, Social) に対する具体的な検証手法（テスト、レビュー、監査、プロトタイプ等）を定義し、検証マトリクスを作成。
+    5.  **Human Review & Approval**: 開発継続の承認。
+    6.  **共通メモリ更新 (Markdown)**: 変更方針を反映。
+    7.  **実装 (OpenCode Coder)**: 整合性を保ちつつ実装。
 
 ```mermaid
 graph LR
@@ -98,8 +102,22 @@ graph LR
 
 ---
 
-## 6. 共通メモリとインタラクティブな循環
-**共通メモリ**は、単なる成果の記録ではなく、プロジェクトの**「Single Source of Truth (SSOT)」**として機能する。
+## 6. 検証基準（Verification Standards）
+**開発プロセスの最終段階として必須となる、品質保証のための検証基準。**
+
+### 6.1 確認事項
+- **Multi-layer Verification (多層検証)**:
+    - **機能検証 (Functional Verification)**: 正確な挙動を保証するためのユニットテスト、統合テスト、回帰テスト。
+    - **UX検証 (UX Verification)**: アクセシビリティチェック、ユーザビリティ検証、およびレスポンシブデザインの検証。
+    - **組織・セキュリティ (Organizational & Security)**: セキュリティ監査、プライバシーチェック (GDPR/CCPA/etc.)、および社内標準への準拠。
+    - **社会的・法的・ビジネス監査 (Social, Legal, & Business Audit)**: 倫理的影響のレビュー、法的コンプライアンス監査 (Social/Legal)、およびビジネス優先度/インパクトの実現確認。
+    - **パフォーマンスと副作用の分析 (Performance & Side-effect Analysis)**: 予期せぬ副作用の特定と、パフォーマンスの退退 (regressions) の監視。
+
+
+
+
+### 6.2 統合フロー
+`実装 (OpenCode Coder) -> 検証 (Verification) -> 共通メモリ更新 (Final Review)`
 
 *   **同期ポイント:** AIとの対話から抽出された合意事項（ADR、設計、分析結果）を、構造化されたデータとして記録。
 *   **合意の動的更新:** ユーザーからのフィードバックや、実装中に発見された制約を即座に反映。
