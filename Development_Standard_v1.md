@@ -136,9 +136,9 @@ graph LR
 **共通メモリ**は、プロジェクトの「共通認識」を維持するための**Single Source of Truth (SSOT)** として機能する。
 
 *   **保存場所:**
-    *   `docs/architecture/`: アーキテクチャ設計、ADR、技術選定の記録
-    *   `.opencode/shared/`: 開発中の動的な合意、中間的な分析結果
-    *   `docs/ai-findings/`: AIによる分析結果、リファクタリングの指摘事項
+    *   `docs/architecture/`: アーキテクチャ設計、ADR、技術選定の記録 (Permanent: 改定されたADR、Tier 2/3の設計変更のみ)
+    *   `.opencode/shared/`: 開発中の動的な合意、中間的な分析結果 (Ephemeral: 短期的な分析結果。完了後は削除またはPromotionが必要)
+    *   `docs/ai-findings/`: AIによる分析結果、リファクタリングの指摘事項 (Archived: 深層分析の結果や技術的負債の報告)
 *   **ADR（Architecture Decision Records）の標準:**
     *   **Context (背景):** なぜこの決定が必要になったか。
     *   **Decision (決定事項):** 最終的に採用する技術や設計。
