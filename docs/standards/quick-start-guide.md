@@ -77,4 +77,14 @@ Session のペルソナ設定で **「Analyst」** を選択します。
 
 ## 📚 次のステップ
 
-詳細なルールやベストプラクティスについては、[開発標準（Development Standards）](development-standard.md) を参照してください。
+### 学習用サンプルプロジェクト
+
+[User Login Sample](../quickstart-user-login-sample/) で実際のワークフローを確認できます。このサンプルは Quick Start Guide に基づいて作成された学習用プロジェクトです。
+
+- [ADR_001_user_login.md](../quickstart-user-login-sample/ADR_001_user_login.md) - 5 つの視点から生成された設計方針
+- [TEST_DOCUMENTATION.md](../quickstart-user-login-sample/TEST_DOCUMENTATION.md) - テストドキュメント
+- ソースコードと API ドキュメントも確認できます
+
+### 詳細なルールやベストプラクティス
+
+[開発標準（Development Standards）](development-standard.md) を参照してください。
