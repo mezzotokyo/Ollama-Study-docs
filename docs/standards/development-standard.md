@@ -122,8 +122,20 @@ graph LR
     - **社会的・法的・ビジネス監査 (Social, Legal, & Business Audit)**: 倫理的影響のレビュー、法的コンプライアンス監査 (Social/Legal)、およびビジネス優先度/インパクトの実現確認。
     - **パフォーマンスと副作用の分析 (Performance & Side-effect Analysis)**: 予期せぬ副作用の特定と、パフォーマンスの退退 (regressions) の監視。
 
+### 検証マトリクスの例
 
+| Requirement | Test Method | Owner | Status |
+| :--- | :--- | :--- | :--- |
+| Functional: Login works | Unit Test | Coder | ✅ |
+| UX: Responsive design | Manual Review | Analyst | ⏳ |
+| Business: Priority met | Impact Analysis | Human Reviewer | ✅ |
+| Org: Security compliance | Audit | Analyst | ✅ |
+| Social: Privacy check | GDPR/CCPA Review | Analyst | ✅ |
 
+**Legend:**
+- ✅ Passed
+- ⏳ In Progress
+- ❌ Failed
 
 ### 6.2 統合フロー
 `実装 (OpenCode Coder) -> 検証 (Verification) -> 共通メモリ更新 (Final Review)`
@@ -145,7 +157,7 @@ graph LR
 **共通メモリ**は、プロジェクトの「共通認識」を維持するための**Single Source of Truth (SSOT)** として機能する。
 
 *   **保存場所:**
-    *   `docs/architecture/`: アーキテクチャ設計、ADR、技術選定の記録 (Permanent: 改定されたADR、Tier 2/3の設計変更のみ)
+    *   `docs/architecture/`: アーキテクチャ設計、ADR、技術選定の記録 (Permanent: 改定されたADR、Tier 2/3の設計変更 **かつ** クロスモジュール影響を持つもの)
     *   `.opencode/shared/`: 開発中の動的な合意、中間的な分析結果 (Ephemeral: 短期的な分析結果。完了後は削除またはPromotionが必要)
     *   `docs/ai-findings/`: AIによる分析結果、リファクタリングの指摘事項 (Archived: 深層分析の結果や技術的負債の報告)
 *   **ADR（Architecture Decision Records）の標準:**
@@ -181,6 +193,36 @@ graph LR
 - **技術的実現可能性:** 選択したアプローチが技術的な制約内で実行可能か。
 - **インパクト評価:** 既存モジュールへの予期せぬ副作用はないか。
 
+## 9. タスク失敗と回復（Task Failure & Recovery）
+
+開発プロセスにおいて、AI がタスクを完了できない場合や、Human Review で承認されない場合の対応方針。
+
+### 9.1 Coder の失敗（実装不能）
+- **原因:** 要件が不明確、技術的制約、依存関係の問題など。
+- **対応:** Analyst は即座に再分析を行い、要件を修正または簡素化する。
+- **ロールバック:** 直前の「要求分析」フェーズに戻り、ADR を再作成する。
+
+### 9.2 Human Review の失敗（承認不能）
+- **原因:** 設計が要件を満たさない、技術的リスクが高いなど。
+- **対応:** Analyst はレビューコメントを精査し、設計を修正する。
+- **ロールバック:** 「設計更新」フェーズに戻り、再度 Human Review を依頼する。
+
+### 9.3 再試行の制限（Retry Limit）
+再試行の上限は固定値ではなく、以下の要因に応じて柔軟に設定します。
+
+| 要因 | 考慮事項 | 推奨アクション |
+| :--- | :--- | :--- |
+| **失敗の種類** | 要件不明 vs. 技術的制約 | 要件不明 → Analyst が再分析<br>技術的制約 → アプローチ見直し |
+| **タスクの複雑性** | Tier 1 (Minor) vs. Tier 3 (Architectural) | Tier 1: 2-3 回<br>Tier 2: 3-4 回<br>Tier 3: 5+ 回（段階的アプローチ） |
+| **時間経過** | 実装に要した時間 | 長時間（>2 時間）要した場合、早期に Escalate |
+
+**Escalation Trigger:**
+以下のいずれかに該当する場合、プロジェクトリーダーに報告し、手動介入を要請します。
+- 同じアプローチで連続して失敗する
+- 要件の再定義が必要になった
+- 技術的制約が予想外だった
+
 ---
+
 *本ドキュメントは、チーム内の開発効率と品質を最大化するための標準指針です。*
 

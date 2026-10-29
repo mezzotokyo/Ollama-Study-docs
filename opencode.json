@@ -8,15 +8,22 @@
         "baseURL": "http://iride.local:11434/v1"
       },
       "models": {
-        "gemma4:12b-nvfp4-analyst": {
-          "name": "Gemma4 Analyst (設計・レビュー)",
+        "proactive_analyst:latest": {
+          "name": "Ethical Analyst (設計)",
           "limit": {
             "context": 32768,
             "output": 8192
           }
         },
-        "qwen3.5:9b-nvfp4-coder": {
-          "name": "Qwen35 Coder (実装)",
+        "reactive-reviewer:latest": {
+          "name": "Solid Reviewer (レビュー)",
+          "limit": {
+            "context": 32768,
+            "output": 8192
+          }
+        },
+        "coder-persona:latest": {
+          "name": "The Coder (実装)",
           "limit": {
             "context": 32768,
             "output": 8192
@@ -38,5 +45,5 @@
       }
     }
   },
-  "model": "ollama/gemma4:12b-nvfp4-analyst"
+  "model": "proactive_analyst:latest"
 }
