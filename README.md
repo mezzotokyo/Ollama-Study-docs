@@ -85,6 +85,7 @@ Session のペルソナ設定で「Analyst」を選択します。このペル�
 完了！Analyst が分析し、OpenCode Coder がテスト付きの実装を生成します。
 
 [詳細なガイドを読む](docs/standards/quick-start-guide.md)
+ | [サンプルプロジェクトを見る](docs/standards/quickstart-user-login-sample/)
 
 
 ## 5つの視点（The 5 Perspectives of Analysis）
