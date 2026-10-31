@@ -44,19 +44,20 @@ AI（LLM）を単なる「コード生成ツール」として使うだけでは
 
 ---
 
-## Quick Start: Your First Analyst Session
+## Quick Start: Your First Development Session
 
-本リポジトリをすぐに使い始めるためのガイドです。5 分で始められます！
+本リポジトリをすぐに使い始めるためのガイドです。分析（Cherry Studio）と実装・検証（OpenCode）を分けて進めます。
 
-### ステップ 1: Cherry Studio でセッション作成
+| フェーズ | ツール | ペルソナ（モデル） | 成果物 |
+|---|---|---|---|
+| 1. 分析 | Cherry Studio | Analyst（Ethical Architect） | 要件分析・ADR |
+| 2. 承認 | 人間 | — | 承認済み ADR |
+| 3. 実装 | OpenCode | Coder（Expert Engineer / `iride:expert_engineer`） | コード・テスト |
+| 4. 検証 | OpenCode | Auditor（Technical Auditor / `iride:technical_auditor`） | Pass/Fail・指摘 |
 
-Cherry Studio を開き、新しい Session を作成します。
+### ステップ 1: 分析 — Cherry Studio / Analyst（Ethical Architect）
 
-### ステップ 2: Analyst ペルソナを選択
-
-Session のペルソナ設定で「Analyst」を選択します。このペルソナは、5 つの視点（Functional, UX, Business, Org, Social）から要件を分析し、ADR（設計方針）を生成する思考のパートナーです。
-
-### ステップ 3: 要件を入力して開始
+Cherry Studio を開き、新しい Session を作成し、ペルソナ設定で「Analyst（Ethical Architect）」を選択します。このペルソナは、5 つの視点（Functional, UX, Business, Org, Social）から要件を分析し、ADR（設計方針）を生成する思考のパートナーです。
 
 日本語または英語で、以下の形式で要件を入力します：
 
@@ -82,7 +83,19 @@ Session のペルソナ設定で「Analyst」を選択します。このペル�
 - **Social:** パスワードは暗号化して保存する。GDPR に準拠する。
 ```
 
-完了！Analyst が分析し、OpenCode Coder がテスト付きの実装を生成します。
+### ステップ 2: 承認 — 人間によるレビュー
+
+生成された ADR を確認し、承認します。実装に進む前に設計を確定させる Human-in-the-Loop（HITL）ゲートです。設計変更が必要な場合は、ステップ 1 に戻って ADR を修正します。
+
+### ステップ 3: 実装 — OpenCode / Coder（Expert Engineer）
+
+承認済み ADR をもとに、OpenCode の `iride:expert_engineer` で実装とテストを生成します。ADR から逸脱する必要が出た場合は実装を止め、ステップ 1 の再分析に戻します。
+
+### ステップ 4: 検証 — OpenCode / Auditor（Technical Auditor）
+
+OpenCode の `iride:technical_auditor` で、実装が ADR に適合しているか、セキュリティ・回帰・副作用に問題がないかを検証します。Pass/Fail と修正点を確認し、必要ならステップ 3 に戻します。
+
+完了！承認済み ADR に基づく実装・テストと、検証結果が揃います。
 
 [詳細なガイドを読む](docs/standards/quick-start-guide.md)
  | [サンプルプロジェクトを見る](docs/standards/quickstart-user-login-sample/)
