@@ -18,7 +18,7 @@
 
 | フェーズ | ツール | ペルソナ（モデル） | 成果物 |
 |---|---|---|---|
-| 1. 分析 | Cherry Studio | Analyst（Ethical Architect） | 要件分析・ADR |
+| 1. 分析 | Cherry Studio | Analyst（Ethical Architect / `iride:ethical_architect`） | 要件分析・ADR |
 | 2. 承認 | 人間 | — | 承認済み ADR |
 | 3. 実装 | OpenCode | Coder（Expert Engineer / `iride:expert_engineer`） | コード・テスト |
 | 4. 検証 | OpenCode | Auditor（Technical Auditor / `iride:technical_auditor`） | Pass/Fail・指摘 |

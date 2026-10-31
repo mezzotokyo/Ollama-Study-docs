@@ -3,10 +3,12 @@
 ## 1. 基本思想
 本ドキュメントは、LLM（大規模言語モデル）を単なるコード生成ツールではなく、**「思考のパートナー」**として開発プロセスに組み込むための指針である。
 
-**「思考の三位一体」**を定義する：
-- **Cherry Studio** = システムを理解し、**「考える」**場所
-- **OpenCode Analyst** = 既存の資産を読み取り、**「理解する」**場所
-- **OpenCode Coder** = 100%の実装を**「作る」**場所
+**「共創の役割分担」**を定義する。モデル（ペルソナ）と利用ツールは分離して考え、同じ `iride:ethical_architect` を Cherry Studio と OpenCode の両方で利用できる。
+
+- **Cherry Studio / Analyst（Ethical Architect）** = 要件を分析し、**「考える」**場所
+- **OpenCode Analyst（Ethical Architect）** = 既存の資産を読み取り、**「理解する」**場所
+- **OpenCode Coder（Expert Engineer）** = 100%の実装を**「作る」**場所
+- **OpenCode Auditor（Technical Auditor）** = 実装を検証し、**「保証する」**場所
 - **共通メモリ** = 全ての知見を統合し、**「記憶する」**共通メモリ
 
 ---
@@ -26,11 +28,14 @@
 ## 3. 役割定義（Role Definition）
 思考の指針に基づき、以下の役割を各ツールに割り当てる。
 
-| 役割 | 担当ツール | 主な役割 | キーワード | 利用対象 |
-| :--- | :--- | :--- | :--- | --- |
-| **Analyst (思考)** | **Cherry Studio** | 要求分析、業務分析、ADR作成、技術選定、アーキテクチャ設計、画像/PDF分析 | **概念** | 要件、設計書、図表、写真 |
-| **Analyst (理解)** | **OpenCode Analyst** | コード読解、リファクタリング分析、PRレビュー、依存関係分析、技術的負債調査 | **コード** | ソースコード、Git Diff、ログ |
-| **Coder (実装)** | **OpenCode Coder** | 実装、テスト生成、修正、コード変換 | **生成** | ソースコード |
+| 役割 | 担当ツール | ペルソナ（モデル） | 主な役割 | キーワード | 利用対象 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Analyst (思考・設計)** | **Cherry Studio** | Ethical Architect（`iride:ethical_architect`） | 要求分析、業務分析、ADR作成、技術選定、アーキテクチャ設計、画像/PDF分析 | **概念** | 要件、設計書、図表、写真 |
+| **Analyst (理解)** | **OpenCode** | Ethical Architect（`iride:ethical_architect`） | コード読解、リファクタリング分析、PRレビュー、依存関係分析、技術的負債調査 | **コード** | ソースコード、Git Diff、ログ |
+| **Coder (実装)** | **OpenCode** | Expert Engineer（`iride:expert_engineer`） | 実装、テスト生成、修正、コード変換 | **生成** | ソースコード |
+| **Auditor (検証)** | **OpenCode** | Technical Auditor（`iride:technical_auditor`） | ADR適合検証、セキュリティ監査、回帰・副作用チェック | **検証** | 実装コード、テスト結果、ADR |
+
+> モデル（ペルソナ）は Ollama 上の `iride:*` モデルであり、利用ツールとは独立している。Cherry Studio と OpenCode のどちらからでも同じペルソナを利用できるが、本標準では上表の分担を推奨する。
 
 ---
 
@@ -59,45 +64,63 @@
 **「要件」から「理想の姿」を構築するフロー。**
 *   **特徴:** 自由度が高く、**「何を、どう作るか」**の定義に集中する。
 *   **フロー:**
-    1.  **要求分析 (Cherry Studio Analyst)**: 5つの視点から要件を抽出。
-    2.  **ADR作成 (Cherry Studio Analyst)**: 設計方針を決定。
+    1.  **要求分析 (Cherry Studio / Ethical Architect)**: 5つの視点から要件を抽出。
+    2.  **ADR作成 (Cherry Studio / Ethical Architect)**: 設計方針を決定。
     3.  **検証計画 (Verification Planning)**: 各要求カテゴリ (Functional, UX, Business, Org, Social) に対する具体的な検証手法（テスト、レビュー、監査、プロトタイプ等）を定義し、検証マトリクスを作成。
 
     4.  **Human Review & Approval**: 開発継続の承認。
-    5.  **アーキテクチャ設計 (Cherry Studio Analyst)**: システム構成を定義。
+    5.  **アーキテクチャ設計 (Cherry Studio / Ethical Architect)**: システム構成を定義。
     6.  **共通メモリ更新 (Markdown)**: 設計を反映。
-    7.  **実装 (OpenCode Coder)**: 実装とテスト生成。
+    7.  **実装 (OpenCode / Expert Engineer)**: 実装とテスト生成。
+    8.  **検証 (OpenCode / Technical Auditor)**: ADR 適合性、セキュリティ、回帰、副作用を確認。Fail の場合は実装または設計へ戻す。
+    9.  **共通メモリ最終更新 (Final Review)**: 検証結果を反映。
 
 ```mermaid
 graph LR
     User((ユーザー)) --> A[要求分析]
     A --> B[ADR作成]
-    B --> C[アーキテクチャ設計]
-    C --> F[(共通メモリ)]
-    F --> E[実装]
-    E --> User
+    B --> C[検証計画]
+    C --> D{Human Review / Approval}
+    D -->|承認| E[アーキテクチャ設計]
+    D -->|差し戻し| B
+    E --> F[(共通メモリ)]
+    F --> G[実装 / Expert Engineer]
+    G --> H[検証 / Technical Auditor]
+    H -->|Pass| I[(共通メモリ最終更新)]
+    H -->|実装不備| G
+    H -->|設計不備| B
+    I --> User
 ```
 
 ### B. エンハンスメント（Brownfield）
 **「既存の資産」をベースに、制約を考慮した拡張を行うフロー。**
 *   **特徴:** **「既存の制約」**を深く理解し、安全な拡張を追求する。
 *   **フロー:**
-    1.  **現状分析 (OpenCode Analyst)**: 既存コードの依存関係と制約を徹底調査。
-    2.  **影響範囲の特定 (OpenCode Analyst)**: 変更が及ぼす影響を特定。
-    3.  **設計更新 (Cherry Studio Analyst)**: 既存の制約を考慮した設計を策定。
+    1.  **現状分析 (OpenCode / Ethical Architect)**: 既存コードの依存関係と制約を徹底調査。
+    2.  **影響範囲の特定 (OpenCode / Ethical Architect)**: 変更が及ぼす影響を特定。
+    3.  **設計更新 (Cherry Studio / Ethical Architect)**: 既存の制約を考慮した設計を策定。
     4.  **検証計画 (Verification Planning)**: 各要求カテゴリ (Functional, UX, Business, Org, Social) に対する具体的な検証手法（テスト、レビュー、監査、プロトタイプ等）を定義し、検証マトリクスを作成。
     5.  **Human Review & Approval**: 開発継続の承認。
     6.  **共通メモリ更新 (Markdown)**: 変更方針を反映。
-    7.  **実装 (OpenCode Coder)**: 整合性を保ちつつ実装。
+    7.  **実装 (OpenCode / Expert Engineer)**: 整合性を保ちつつ実装。
+    8.  **検証 (OpenCode / Technical Auditor)**: ADR 適合性、セキュリティ、回帰、副作用を確認。Fail の場合は実装または設計へ戻す。
+    9.  **共通メモリ最終更新 (Final Review)**: 検証結果を反映。
 
 ```mermaid
 graph LR
     User((ユーザー)) --> D[現状分析]
     D --> F[影響範囲特定]
     F --> C[設計更新]
-    C --> F[(共通メモリ)]
-    F --> E[実装]
-    E --> User
+    C --> V[検証計画]
+    V --> H{Human Review / Approval}
+    H -->|承認| M[(共通メモリ)]
+    H -->|差し戻し| C
+    M --> E[実装 / Expert Engineer]
+    E --> AU[検証 / Technical Auditor]
+    AU -->|Pass| FM[(共通メモリ最終更新)]
+    AU -->|実装不備| E
+    AU -->|設計不備| C
+    FM --> User
 ```
 
 ---
@@ -127,10 +150,10 @@ graph LR
 | Requirement | Test Method | Owner | Status |
 | :--- | :--- | :--- | :--- |
 | Functional: Login works | Unit Test | Coder | ✅ |
-| UX: Responsive design | Manual Review | Analyst | ⏳ |
+| UX: Responsive design | Manual Review | Auditor | ⏳ |
 | Business: Priority met | Impact Analysis | Human Reviewer | ✅ |
-| Org: Security compliance | Audit | Analyst | ✅ |
-| Social: Privacy check | GDPR/CCPA Review | Analyst | ✅ |
+| Org: Security compliance | Audit | Auditor | ✅ |
+| Social: Privacy check | GDPR/CCPA Review | Auditor | ✅ |
 
 **Legend:**
 - ✅ Passed
@@ -138,7 +161,7 @@ graph LR
 - ❌ Failed
 
 ### 6.2 統合フロー
-`実装 (OpenCode Coder) -> 検証 (Verification) -> 共通メモリ更新 (Final Review)`
+`実装 (OpenCode / Expert Engineer) -> 検証 (OpenCode / Technical Auditor) -> 共通メモリ更新 (Final Review)`
 
 *   **同期ポイント:** AIとの対話から抽出された合意事項（ADR、設計、分析結果）を、構造化されたデータとして記録。
 *   **合意の動的更新:** ユーザーからのフィードバックや、実装中に発見された制約を即座に反映。
@@ -194,6 +217,7 @@ graph LR
 - **ADR承認:** 設計がすべての機能要件を満たしているか。
 - **技術的実現可能性:** 選択したアプローチが技術的な制約内で実行可能か。
 - **インパクト評価:** 既存モジュールへの予期せぬ副作用はないか。
+- **検証合格:** Auditor（Technical Auditor）の Pass/Fail を記録し、Pass の場合のみ最終更新へ進む。
 
 ## 9. タスク失敗と回復（Task Failure & Recovery）
 
@@ -201,15 +225,20 @@ graph LR
 
 ### 9.1 Coder の失敗（実装不能）
 - **原因:** 要件が不明確、技術的制約、依存関係の問題など。
-- **対応:** Analyst は即座に再分析を行い、要件を修正または簡素化する。
+- **対応:** Analyst（Ethical Architect）は即座に再分析を行い、要件を修正または簡素化する。
 - **ロールバック:** 直前の「要求分析」フェーズに戻り、ADR を再作成する。
 
 ### 9.2 Human Review の失敗（承認不能）
 - **原因:** 設計が要件を満たさない、技術的リスクが高いなど。
-- **対応:** Analyst はレビューコメントを精査し、設計を修正する。
-- **ロールバック:** 「設計更新」フェーズに戻り、再度 Human Review を依頼する。
+- **対応:** Analyst（Ethical Architect）はレビューコメントを精査し、設計を修正する。
+- **ロールバック:** 「設計更新」（Greenfield では「ADR作成」）に戻り、再度 Human Review を依頼する。
 
-### 9.3 再試行の制限（Retry Limit）
+### 9.3 Auditor の失敗（検証不合格）
+- **原因:** ADR からの逸脱、セキュリティ・プライバシー問題、回帰、副作用など。
+- **対応:** Auditor は Pass/Fail、具体的な指摘、必要な修正を報告する。Coder（Expert Engineer）は指摘に基づいて実装を修正する。
+- **ロールバック:** 実装不備は「実装」フェーズへ、設計不備は「要求分析」または「ADR作成」フェーズへ戻す。
+
+### 9.4 再試行の制限（Retry Limit）
 再試行の上限は固定値ではなく、以下の要因に応じて柔軟に設定します。
 
 | 要因 | 考慮事項 | 推奨アクション |
