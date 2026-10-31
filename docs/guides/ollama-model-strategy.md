@@ -4,6 +4,8 @@
 
 OpenCode からリモート Ollama を利用する構成について、Keep Alive、KV キャッシュ、Gemma 4 と Qwen 3.5 の役割分担、および推奨パラメータを整理した。
 
+> 最新のモデル名・パラメータ・運用フローは [モデル構成（Ollama Models）](../setup/ollama-models.md) を正とします。本書は設計判断の背景メモです。
+
 ---
 
 ## Ollama Keep Alive
@@ -118,9 +120,9 @@ thinking=true
 ```text
 Model: Qwen 3.5 9.4B
 Quantization: NVFP4
-num_ctx: 65536
-thinking: true (default)
-presence_penalty: 1.5
+num_ctx: 32768
+thinking: false（expert_engineer。technical_auditor は既定の true）
+presence_penalty: 0（expert_engineer のみ OpenCode で指定）
 ```
 
 ### 主な用途
@@ -181,9 +183,10 @@ thinking=false
 
 ## 推奨モデル構成
 
-### Gemma4 Analyst
+### Ethical Architect（Analyst / `iride:ethical_architect`）
 
 ```text
+FROM gemma4:12b-nvfp4
 num_ctx=32768
 thinking=true
 temperature=0.2
@@ -194,15 +197,18 @@ temperature=0.2
 - 要件定義
 - 基本設計
 - 詳細設計
+- ADR 作成
 - レビュー
 
-### Qwen35 Coder
+### Expert Engineer（Coder / `iride:expert_engineer`）
 
 ```text
+FROM qwen3.5:9b-nvfp4
 num_ctx=32768
 thinking=false
-temperature=0.2
+temperature=0.0
 presence_penalty=0
+stop=<|im_end|>, <|endoftext|>
 ```
 
 用途:
@@ -211,18 +217,25 @@ presence_penalty=0
 - コード生成
 - テスト生成
 
-### Gemma4 Large Context
+### Technical Auditor（Auditor / `iride:technical_auditor`）
 
 ```text
-num_ctx=65536
-thinking=true
+FROM qwen3.5:9b-nvfp4
+num_ctx=32768
+thinking=true（既定）
+temperature=0.0
+stop=<|im_end|>, <|endoftext|>
 ```
 
 用途:
 
-- 大規模コードベース解析
-- 巨大ログ解析
-- 横断的リファクタリング
+- 設計・ADR との適合性検証
+- セキュリティ・プライバシー監査
+- 回帰・副作用チェック
+
+### Large Context（任意）
+
+現在は専用の派生モデルを定義していません。必要時に `num_ctx=65536` の派生モデルを `models/` に追加してください。
 
 ---
 

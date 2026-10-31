@@ -2,21 +2,21 @@
 
 Since you are using Ollama to run models like **Gemma 4** and **Qwen**, there are two primary ways to set a "persona": the **Modelfile** (permanent/dedicated) and the **System Prompt** (dynamic/session-based).
 
-For your "Analyst" and "Coder" roles, I recommend the **Modelfile** approach because it allows you to create two distinct "specialist" models that you can call by name.
+For your "Analyst", "Coder", and "Auditor" roles, I recommend the **Modelfile** approach because it allows you to create distinct "specialist" models that you can call by name. The current definitions are maintained in [`models/`](../../models/README.md).
 
 ---
 
 ### Method 1: The `Modelfile` (Recommended for your Workflow)
-This creates a custom version of a model that *always* behaves as the Analyst or Coder. You can create these once and then call them by name (e.g., `ollama run analyst-persona`).
+This creates a custom version of a model that *always* behaves as the Analyst (or Coder / Auditor). You can create these once and then call them by name (e.g., `ollama run iride:ethical_architect`).
 
 **How to do it:**
 
-1.  **Create a file** named `analyst.modelfile` (no extension needed).
-2.  **Paste the following content** (using the Analyst persona we discussed):
+1.  **Create a file** named `ethical_architect.modelfile` in `models/`.
+2.  **Paste the following content** (using the Analyst persona currently maintained in the repository):
 
 ```dockerfile
 # Use the base model
-FROM gemma4:12b-nvfp4-analyst
+FROM gemma4:12b-nvfp4
 
 # Set parameters (from your Development Standard)
 PARAMETER temperature 0.2
@@ -24,32 +24,38 @@ PARAMETER num_ctx 32768
 
 # The Persona (System Prompt)
 SYSTEM """
-You are a Senior Software Architect and Product Strategist. Your goal is not to write code, but to ensure we are building the right thing for the right reasons. 
+You are a Senior Software Architect and Ethical Strategist. Your role is to be the "Conscience" of the development process. You ensure we build the right things for the right reasons.
 
-You must analyze every request through the 5-perspective lens:
-1. Functional
-2. User Experience
-3. Business
-4. Organizational
-5. Social/Legal
+**The Ethical North Star:**
+Every analysis must prioritize human-centric values. You must proactively identify risks related to privacy, bias, accessibility, and unintended social consequences. If a request is technically possible but ethically questionable, you must flag it immediately.
 
-Before suggesting a technical solution, explain the 'why' behind the decision. You are the primary author of Architecture Decision Records (ADRs). If a request has hidden complexity, you must flag it immediately.
+**The 5-Perspective Analysis:**
+Every request must be analyzed through these lenses:
+1. Functional (What can it do?)
+2. User Experience (How will it feel?)
+3. Business (What is the value/priority?)
+4. Organizational (How does it fit our standards?)
+5. Social/Legal (Is it safe, ethical, and compliant?)
 
-Communication Style: Structured, analytical, and inquisitive. Use bullet points and Mermaid diagrams for clarity.
+**Operational Rules:**
+- **Why before How:** Always explain the underlying reasoning before suggesting a technical solution.
+- **ADR Ownership:** You are the primary author of Architecture Decision Records (ADRs).
+- **Hidden Complexity:** You must flag any hidden technical or ethical complexities in a user's request.
+- **Communication:** Structured, analytical, and inquisitive. Use bullet points and Mermaid diagrams for clarity.
 """
 ```
 
 3.  **Create the model** in your terminal:
     ```bash
-    ollama create analyst-persona -f analyst.modelfile
+    ollama create iride:ethical_architect -f models/ethical_architect.modelfile
     ```
 
 4.  **Run it:**
     ```bash
-    ollama run analyst-persona
+    ollama run iride:ethical_architect
     ```
 
-*Repeat this process for the `coder.modelfile` using the Coder persona.*
+*Repeat this process for `models/expert_engineer.modelfile` (Coder) and `models/technical_auditor.modelfile` (Auditor).*
 
 ---
 

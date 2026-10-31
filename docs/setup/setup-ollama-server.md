@@ -190,24 +190,22 @@ nssm remove Ollama confirm
 
 | opencode.json のモデル ID | 名前 | ベースモデル（取得コマンド） |
 |---------------------------|------|------------------------------|
-| `gemma4:e4b-mlx` | Gemma 4 E4B (Ollama) | `gemma4:e4b-mlx`（`ollama pull gemma4:e4b-mlx`） |
-| `gemma4:e4b-mlx-64k` | Gemma 4 E4B (64K) | `gemma4:e4b-mlx`（`ollama pull gemma4:e4b-mlx`） |
-| `gemma4:12b-mlx-32k` | Gemma 4 12B (32K) | `gemma4:12b-mlx`（`ollama pull gemma4:12b-mlx`） |
-| `qwen3.5:4b-mlx-64k` | Qwen3.5 4B (64K) | `qwen3.5:4b-mlx`（`ollama pull qwen3.5:4b-mlx`） |
-| `qwen3:8b-40k` | Qwen3 8B (40K) | `qwen3:8b`（`ollama pull qwen3:8b`） |
+| `iride:ethical_architect` | Ethical Architect (Analysis) | `gemma4:12b-nvfp4`（`ollama pull gemma4:12b-nvfp4`） |
+| `iride:expert_engineer` | Expert Engineer (Coding) | `qwen3.5:9b-nvfp4`（`ollama pull qwen3.5:9b-nvfp4`） |
+| `iride:technical_auditor` | Technical Auditor (Review) | `qwen3.5:9b-nvfp4`（`ollama pull qwen3.5:9b-nvfp4`） |
 
 ```sh
-ollama pull gemma4:e4b-mlx
-ollama pull gemma4:12b-mlx
-ollama pull qwen3.5:4b-mlx
-ollama pull qwen3:8b
+ollama pull gemma4:12b-nvfp4
+ollama pull qwen3.5:9b-nvfp4
 ollama list
 ```
 
+派生モデル（`iride:*`）は `models/*.modelfile` から作成します。手順の詳細は [モデル構成（Ollama Models）](ollama-models.md) を参照してください。
+
 > 名前に `-mlx` を含むモデルは **Apple Silicon（Metal）向けの量子化モデル**です。実行には Apple Silicon の macOS（サーバー）が必要で、Intel Mac では動作しません。ベースモデルを pull する際も `-mlx` 付きのタグを使用してください。
 
-### 3.2 エイリアス作成（context 制限）
-`opencode.json` の `*-mlx-64k` / `*-mlx-32k` / `*-40k` は、**context 長を制限したエイリアス**です。サーバーに該当するタグが存在しない場合は、Modelfile でエイリアスを作成します。
+### 3.2 参考: エイリアス作成（context 制限）
+以下は、context 長を制限した別名モデルを作る場合の例です（現在の `iride:*` 構成では、`models/*.modelfile` 内で `num_ctx` を指定済みのため必須ではありません）。
 
 例（`gemma4:e4b-mlx-64k`、`num_ctx=65536`）:
 
@@ -260,6 +258,8 @@ ollama list
 ## 4. クライアント側設定（opencode）
 
 クライアントマシン（別マシン）のリポジトリで `opencode.json` を設定します。
+
+> 以下は別構成の設定例です。本リポジトリの最新設定（`iride:*`）はルートの `opencode.json` と [モデル構成（Ollama Models）](ollama-models.md) を参照してください。
 
 ```json
 {

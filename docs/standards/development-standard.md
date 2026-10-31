@@ -174,9 +174,11 @@ graph LR
 ### 7.3 モデル構成（Model Configuration）
 | 役割 | モデル | num_ctx | thinking | temperature | 特徴 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Analyst** | Gemma 4 | 32,768 | true | 0.2 | 高度な推論、多角的な分析 |
-| **Coder** | Qwen 3.5 | 32,768 | false | 0.0 | 実装速度、正確なコード生成 |
-| **Large Context** | Gemma 4 | 65,536 | true | 0.2 | 巨大なログ、横断分析 |
+| **Analyst** | `iride:ethical_architect`（Gemma 4 12B） | 32,768 | true | 0.2 | 高度な推論、5 視点分析、ADR、倫理リスク |
+| **Coder** | `iride:expert_engineer`（Qwen 3.5 9B） | 32,768 | false | 0.0 | 実装速度、テスト生成、ADR 厳守 |
+| **Auditor** | `iride:technical_auditor`（Qwen 3.5 9B） | 32,768 | true（既定） | 0.0 | 敵対的検証、セキュリティ監査 |
+
+詳細は [モデル構成（Ollama Models）](../setup/ollama-models.md) を参照してください。Large Context 用の派生モデルは現在未定義で、必要時に `num_ctx` を変更して作成します。
 
 ---
 

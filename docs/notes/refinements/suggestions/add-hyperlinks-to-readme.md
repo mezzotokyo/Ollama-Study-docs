@@ -12,7 +12,7 @@ To make the references in Section 5 of README.md clickable and explicit.
 
 **Proposed:**
 ```markdown
-[開発標準（Development Standards）](docs/standards/development-standard.md) を参照してください。
+[開発標準（Development Standards）](../../../standards/development-standard.md) を参照してください。
 ```
 
 ---

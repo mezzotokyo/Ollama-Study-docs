@@ -35,12 +35,12 @@ AI（LLM）を単なる「コード生成ツール」として使うだけでは
 
 - **開発標準（Development Standards）**: `docs/standards/`
   - 開発フロー、ADR、検証基準など、開発の「ルール」を定義。
-- **モデル構成（Model Configuration）**: `docs/standards/model-configuration.md`
+- **モデル構成（Model Configuration）**: `docs/setup/ollama-models.md`
   - 役割ごとのモデル選定やパラメータ設定。
 - **実践的なTips**: `docs/tips/`
   - コンテキスト圧縮や、AIとの共創におけるコツ。
-- **共創のプロセス（Persona & Process）**: `modelModification4Persona/`
-  - ペルソナの定義や、実際の共創の過程。
+- **共創のプロセス（Persona & Process）**: `models/`
+  - ペルソナ定義（Modelfile）。共創の過程は `docs/notes/` を参照。
 
 ---
 
@@ -140,12 +140,12 @@ AIとの共創において、**「記憶の断絶」**は最大の敵です。
 
 - **開発標準（Development Standards）**: `docs/standards/`
   - 開発フロー、ADR、検証基準など、開発の「ルール」を定義。
-- **モデル構成（Model Configuration）**: `docs/standards/model-configuration.md`
+- **モデル構成（Model Configuration）**: `docs/setup/ollama-models.md`
   - 役割ごとのモデル選定やパラメータ設定。
 - **実践的なTips**: `docs/tips/`
   - コンテキスト圧縮や、AIとの共創におけるコツ。
-- **共創のプロセス（Persona & Process）**: `modelModification4Persona/`
-  - ペルソナの定義や、実際の共創の過程。
+- **共創のプロセス（Persona & Process）**: `models/`
+  - ペルソナ定義（Modelfile）。共創の過程は `docs/notes/` を参照。
 
 ---
 

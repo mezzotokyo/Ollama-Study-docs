@@ -8,22 +8,22 @@
         "baseURL": "http://iride.local:11434/v1"
       },
       "models": {
-        "proactive_analyst:latest": {
-          "name": "Ethical Analyst (設計)",
+        "iride:ethical_architect": {
+          "name": "Ethical Architect (Analysis)",
           "limit": {
             "context": 32768,
             "output": 8192
           }
         },
-        "reactive-reviewer:latest": {
-          "name": "Solid Reviewer (レビュー)",
+        "iride:technical_auditor": {
+          "name": "Technical Auditor (Review)",
           "limit": {
             "context": 32768,
             "output": 8192
           }
         },
-        "coder-persona:latest": {
-          "name": "The Coder (実装)",
+        "iride:expert_engineer": {
+          "name": "Expert Engineer (Coding)",
           "limit": {
             "context": 32768,
             "output": 8192
@@ -34,16 +34,9 @@
             "temperature": 0,
             "presence_penalty": 0
           }
-        },
-        "gemma4:12b-nvfp4-largectx": {
-          "name": "Gemma4 Large Context (横断解析)",
-          "limit": {
-            "context": 65536,
-            "output": 8192
-          }
         }
       }
     }
   },
-  "model": "proactive_analyst:latest"
+  "model": "iride:ethical_architect"
 }
