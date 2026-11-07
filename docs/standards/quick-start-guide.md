@@ -18,10 +18,10 @@
 
 | フェーズ | ツール | ペルソナ（モデル） | 成果物 |
 |---|---|---|---|
-| 1. 分析 | Cherry Studio | Analyst（Ethical Architect / `iride:ethical_architect`） | 要件分析・ADR |
+| 1. 分析 | Cherry Studio | Analyst（Ethical Architect / `ta:architect`） | 要件分析・ADR |
 | 2. 承認 | 人間 | — | 承認済み ADR |
-| 3. 実装 | OpenCode | Coder（Expert Engineer / `iride:expert_engineer`） | コード・テスト |
-| 4. 検証 | OpenCode | Auditor（Technical Auditor / `iride:technical_auditor`） | Pass/Fail・指摘 |
+| 3. 実装 | OpenCode | Coder（Expert Engineer / `ta:engineer`） | コード・テスト |
+| 4. 検証 | OpenCode | Auditor（Technical Auditor / `ta:auditor`） | Pass/Fail・指摘 |
 
 ### フェーズ 1: 分析 — Cherry Studio / Analyst（Ethical Architect）
 
@@ -66,11 +66,11 @@ Cherry Studio を開く → 新しい Session を作成する → ペルソナ�
 
 ### フェーズ 3: 実装 — OpenCode / Coder（Expert Engineer）
 
-承認済み ADR をもとに、OpenCode の `iride:expert_engineer` で実装とテストを生成します。ADR から逸脱する必要が出た場合は実装を止め、フェーズ 1 の再分析に戻します。
+承認済み ADR をもとに、OpenCode の `ta:engineer` で実装とテストを生成します。ADR から逸脱する必要が出た場合は実装を止め、フェーズ 1 の再分析に戻します。
 
 ### フェーズ 4: 検証 — OpenCode / Auditor（Technical Auditor）
 
-OpenCode の `iride:technical_auditor` で、実装が ADR に適合しているか、セキュリティ・回帰・副作用に問題がないかを検証します。Pass/Fail と修正点を確認し、必要ならフェーズ 3 に戻します。
+OpenCode の `ta:auditor` で、実装が ADR に適合しているか、セキュリティ・回帰・副作用に問題がないかを検証します。Pass/Fail と修正点を確認し、必要ならフェーズ 3 に戻します。
 
 ---
 

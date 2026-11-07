@@ -2,16 +2,16 @@
 
 Since you are using Ollama to run models like **Gemma 4** and **Qwen**, there are two primary ways to set a "persona": the **Modelfile** (permanent/dedicated) and the **System Prompt** (dynamic/session-based).
 
-For your "Analyst", "Coder", and "Auditor" roles, I recommend the **Modelfile** approach because it allows you to create distinct "specialist" models that you can call by name. The current definitions are maintained in [`models/`](../../models/README.md).
+For your "Analyst", "Coder", and "Auditor" roles, I recommend the **Modelfile** approach because it allows you to create distinct "specialist" models that you can call by name. The definitions and the Modelfiles used to create the current `ta:*` models are maintained in [`models/`](../../models/README.md).
 
 ---
 
 ### Method 1: The `Modelfile` (Recommended for your Workflow)
-This creates a custom version of a model that *always* behaves as the Analyst (or Coder / Auditor). You can create these once and then call them by name (e.g., `ollama run iride:ethical_architect`).
+This creates a custom version of a model that *always* behaves as the Analyst (or Coder / Auditor). You can create these once and then call them by name (e.g., `ollama run ta:architect`).
 
 **How to do it:**
 
-1.  **Create a file** named `ethical_architect.modelfile` in `models/`.
+1.  **Create a file** named `architect.modelfile` in `models/`.
 2.  **Paste the following content** (using the Analyst persona currently maintained in the repository):
 
 ```dockerfile
@@ -20,7 +20,7 @@ FROM gemma4:12b-nvfp4
 
 # Set parameters (from your Development Standard)
 PARAMETER temperature 0.2
-PARAMETER num_ctx 32768
+PARAMETER num_ctx 65536
 
 # The Persona (System Prompt)
 SYSTEM """
@@ -47,15 +47,15 @@ Every request must be analyzed through these lenses:
 
 3.  **Create the model** in your terminal:
     ```bash
-    ollama create iride:ethical_architect -f models/ethical_architect.modelfile
+    ollama create ta:architect -f models/architect.modelfile
     ```
 
 4.  **Run it:**
     ```bash
-    ollama run iride:ethical_architect
+    ollama run ta:architect
     ```
 
-*Repeat this process for `models/expert_engineer.modelfile` (Coder) and `models/technical_auditor.modelfile` (Auditor).*
+*Repeat this process for `models/engineer.modelfile` (Coder) and `models/auditor.modelfile` (Auditor).*
 
 ---
 

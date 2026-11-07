@@ -3,7 +3,7 @@
 ## 1. 基本思想
 本ドキュメントは、LLM（大規模言語モデル）を単なるコード生成ツールではなく、**「思考のパートナー」**として開発プロセスに組み込むための指針である。
 
-**「共創の役割分担」**を定義する。モデル（ペルソナ）と利用ツールは分離して考え、同じ `iride:ethical_architect` を Cherry Studio と OpenCode の両方で利用できる。
+**「共創の役割分担」**を定義する。モデル（ペルソナ）と利用ツールは分離して考え、同じ `ta:architect` を Cherry Studio と OpenCode の両方で利用できる。
 
 - **Cherry Studio / Analyst（Ethical Architect）** = 要件を分析し、**「考える」**場所
 - **OpenCode Analyst（Ethical Architect）** = 既存の資産を読み取り、**「理解する」**場所
@@ -30,12 +30,12 @@
 
 | 役割 | 担当ツール | ペルソナ（モデル） | 主な役割 | キーワード | 利用対象 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Analyst (思考・設計)** | **Cherry Studio** | Ethical Architect（`iride:ethical_architect`） | 要求分析、業務分析、ADR作成、技術選定、アーキテクチャ設計、画像/PDF分析 | **概念** | 要件、設計書、図表、写真 |
-| **Analyst (理解)** | **OpenCode** | Ethical Architect（`iride:ethical_architect`） | コード読解、リファクタリング分析、PRレビュー、依存関係分析、技術的負債調査 | **コード** | ソースコード、Git Diff、ログ |
-| **Coder (実装)** | **OpenCode** | Expert Engineer（`iride:expert_engineer`） | 実装、テスト生成、修正、コード変換 | **生成** | ソースコード |
-| **Auditor (検証)** | **OpenCode** | Technical Auditor（`iride:technical_auditor`） | ADR適合検証、セキュリティ監査、回帰・副作用チェック | **検証** | 実装コード、テスト結果、ADR |
+| **Analyst (思考・設計)** | **Cherry Studio** | Ethical Architect（`ta:architect`） | 要求分析、業務分析、ADR作成、技術選定、アーキテクチャ設計、画像/PDF分析 | **概念** | 要件、設計書、図表、写真 |
+| **Analyst (理解)** | **OpenCode** | Ethical Architect（`ta:architect`） | コード読解、リファクタリング分析、PRレビュー、依存関係分析、技術的負債調査 | **コード** | ソースコード、Git Diff、ログ |
+| **Coder (実装)** | **OpenCode** | Expert Engineer（`ta:engineer`） | 実装、テスト生成、修正、コード変換 | **生成** | ソースコード |
+| **Auditor (検証)** | **OpenCode** | Technical Auditor（`ta:auditor`） | ADR適合検証、セキュリティ監査、回帰・副作用チェック | **検証** | 実装コード、テスト結果、ADR |
 
-> モデル（ペルソナ）は Ollama 上の `iride:*` モデルであり、利用ツールとは独立している。Cherry Studio と OpenCode のどちらからでも同じペルソナを利用できるが、本標準では上表の分担を推奨する。
+> モデル（ペルソナ）は Ollama 上の `ta:*` モデルであり、利用ツールとは独立している。Cherry Studio と OpenCode のどちらからでも同じペルソナを利用できるが、本標準では上表の分担を推奨する。
 
 ---
 
@@ -197,11 +197,11 @@ graph LR
 ### 7.3 モデル構成（Model Configuration）
 | 役割 | モデル | num_ctx | thinking | temperature | 特徴 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Analyst** | `iride:ethical_architect`（Gemma 4 12B） | 32,768 | true | 0.2 | 高度な推論、5 視点分析、ADR、倫理リスク |
-| **Coder** | `iride:expert_engineer`（Qwen 3.5 9B） | 32,768 | false | 0.0 | 実装速度、テスト生成、ADR 厳守 |
-| **Auditor** | `iride:technical_auditor`（Qwen 3.5 9B） | 32,768 | true（既定） | 0.0 | 敵対的検証、セキュリティ監査 |
+| **Analyst** | `ta:architect`（Gemma 4 12B） | 65,536 | true | 0.2 | 高度な推論、5 視点分析、ADR、倫理リスク |
+| **Coder** | `ta:engineer`（Qwen 3.5 9B） | 65,536 | false | 0.0 | 実装速度、テスト生成、ADR 厳守 |
+| **Auditor** | `ta:auditor`（Qwen 3.5 9B） | 65,536 | true（既定） | 0.0 | 敵対的検証、セキュリティ監査 |
 
-詳細は [モデル構成（Ollama Models）](../setup/ollama-models.md) を参照してください。Large Context 用の派生モデルは現在未定義で、必要時に `num_ctx` を変更して作成します。
+詳細は [モデル構成（Ollama Models）](../setup/ollama-models.md) を参照してください。派生モデルは 64K コンテキストで作成済みです。
 
 ---
 

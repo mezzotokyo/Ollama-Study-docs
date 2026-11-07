@@ -81,7 +81,7 @@ Keep Alive よりも以下の影響が大きい。
 ```text
 Model: Gemma 4 12.4B
 Quantization: NVFP4
-num_ctx: 32768 または 65536
+num_ctx: 65536
 thinking: true
 temperature: 0.2
 ```
@@ -105,7 +105,7 @@ temperature: 0.2
 ### 推奨
 
 ```text
-num_ctx=32768
+num_ctx=65536
 thinking=true
 ```
 
@@ -120,9 +120,9 @@ thinking=true
 ```text
 Model: Qwen 3.5 9.4B
 Quantization: NVFP4
-num_ctx: 32768
-thinking: false（expert_engineer。technical_auditor は既定の true）
-presence_penalty: 0（expert_engineer のみ OpenCode で指定）
+num_ctx: 65536
+thinking: false（ta:engineer。ta:auditor は既定の true）
+presence_penalty: 0（ta:engineer のみ OpenCode で指定）
 ```
 
 ### 主な用途
@@ -142,7 +142,7 @@ presence_penalty: 0（expert_engineer のみ OpenCode で指定）
 ### 推奨
 
 ```text
-num_ctx=32768
+num_ctx=65536
 thinking=false
 ```
 
@@ -183,11 +183,11 @@ thinking=false
 
 ## 推奨モデル構成
 
-### Ethical Architect（Analyst / `iride:ethical_architect`）
+### Ethical Architect（Analyst / `ta:architect`）
 
 ```text
 FROM gemma4:12b-nvfp4
-num_ctx=32768
+num_ctx=65536
 thinking=true
 temperature=0.2
 ```
@@ -200,11 +200,11 @@ temperature=0.2
 - ADR 作成
 - レビュー
 
-### Expert Engineer（Coder / `iride:expert_engineer`）
+### Expert Engineer（Coder / `ta:engineer`）
 
 ```text
 FROM qwen3.5:9b-nvfp4
-num_ctx=32768
+num_ctx=65536
 thinking=false
 temperature=0.0
 presence_penalty=0
@@ -217,11 +217,11 @@ stop=<|im_end|>, <|endoftext|>
 - コード生成
 - テスト生成
 
-### Technical Auditor（Auditor / `iride:technical_auditor`）
+### Technical Auditor（Auditor / `ta:auditor`）
 
 ```text
 FROM qwen3.5:9b-nvfp4
-num_ctx=32768
+num_ctx=65536
 thinking=true（既定）
 temperature=0.0
 stop=<|im_end|>, <|endoftext|>
@@ -235,7 +235,7 @@ stop=<|im_end|>, <|endoftext|>
 
 ### Large Context（任意）
 
-現在は専用の派生モデルを定義していません。必要時に `num_ctx=65536` の派生モデルを `models/` に追加してください。
+派生モデルは既定で `num_ctx=65536` です。さらに大きなコンテキストが必要な場合のみ、専用の派生モデルを `models/` に追加してください。
 
 ---
 
@@ -293,11 +293,11 @@ Think ON
 
 ```text
 Gemma4
-  num_ctx=32768
+  num_ctx=65536
   thinking=true
 
 Qwen3.5
-  num_ctx=32768
+  num_ctx=65536
   thinking=false
 ```
 

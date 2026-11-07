@@ -1,7 +1,7 @@
 # Ollama モデル構成（統合）
 
-最終更新: 2026-10-31
-対象環境: iride.local:11434（Ollama v0.40.9 / macOS + Apple Silicon MLX）
+最終更新: 2026-11-07
+対象環境: TA-MBAir.local:11434（Ollama v0.40.15 / macOS + Apple Silicon MLX）
 対象リポジトリ: `/Users/shin1/Dev/Ollama_Study`
 
 ## 1. 概要
@@ -12,35 +12,34 @@
 - OpenCode 設定（Source of Truth）: `opencode.json`
 - ペルソナ定義（Modelfile）: `models/*.modelfile`
 
-## 2. 現在の構成（iride.local）
+## 2. 現在の構成（TA-MBAir.local）
 
 ### ベースモデル
 
 ```text
 gemma4:12b-nvfp4      (base) - Ethical Architect のベース
 qwen3.5:9b-nvfp4      (base) - Expert Engineer / Technical Auditor のベース
-granite4.1:3b         (検証用・任意)
 ```
 
 ### 派生モデル（ペルソナ）
 
 ```text
-iride:ethical_architect   (Analyst) - 設計・レビュー・ADR・倫理分析
-iride:expert_engineer     (Coder)   - 実装・テスト生成・リファクタ
-iride:technical_auditor   (Auditor) - 検証・セキュリティ監査・品質保証
+ta:architect   (Analyst) - 設計・レビュー・ADR・倫理分析
+ta:engineer    (Coder)   - 実装・テスト生成・リファクタ
+ta:auditor     (Auditor) - 検証・セキュリティ監査・品質保証
 ```
 
 ### 用途別パラメータ
 
 | モデル名 | 用途 | ベース | num_ctx | temperature | その他 | 備考 |
 |---|---|---|---|---|---|---|
-| iride:ethical_architect | Analyst（設計・レビュー・ADR・倫理分析） | gemma4:12b-nvfp4 | 32768 | 0.2 | SYSTEM プロンプト | 既定モデル。5 視点分析と倫理リスクの早期指摘を担当 |
-| iride:expert_engineer | Coder（実装・コード生成・テスト生成・リファクタ） | qwen3.5:9b-nvfp4 | 32768 | 0.0 | stop `<\|im_end\|>`, `<\|endoftext\|>` | OpenCode 側で `think: false`, `presence_penalty: 0` を指定 |
-| iride:technical_auditor | Auditor（検証・セキュリティ監査・品質保証） | qwen3.5:9b-nvfp4 | 32768 | 0.0 | stop `<\|im_end\|>`, `<\|endoftext\|>` | 敵対的レビュー、ADR 適合性の確認を担当 |
+| ta:architect | Analyst（設計・レビュー・ADR・倫理分析） | gemma4:12b-nvfp4 | 65536 | 0.2 | SYSTEM プロンプト | 既定モデル。5 視点分析と倫理リスクの早期指摘を担当 |
+| ta:engineer | Coder（実装・コード生成・テスト生成・リファクタ） | qwen3.5:9b-nvfp4 | 65536 | 0.0 | stop `<\|im_end\|>`, `<\|endoftext\|>` | OpenCode 側で `think: false`, `presence_penalty: 0` を指定 |
+| ta:auditor | Auditor（検証・セキュリティ監査・品質保証） | qwen3.5:9b-nvfp4 | 65536 | 0.0 | stop `<\|im_end\|>`, `<\|endoftext\|>` | 敵対的レビュー、ADR 適合性の確認を担当 |
 
 ## 3. ペルソナ定義（Modelfile の SYSTEM プロンプト概要）
 
-### iride:ethical_architect（Analyst / 設計・倫理）
+### ta:architect（Analyst / 設計・倫理）
 
 - 役割: Senior Software Architect and Ethical Strategist（開発プロセスの「良心」）
 - 倫理方針: プライバシー・バイアス・アクセシビリティ・社会的影響のリスクを先回りして指摘する
@@ -51,7 +50,7 @@ iride:technical_auditor   (Auditor) - 検証・セキュリティ監査・品質
   - 要求に潜む技術的・倫理的複雑性を必ず指摘する
   - 箇条書きと Mermaid 図を用いた構造化された分析
 
-### iride:expert_engineer（Coder / 実装）
+### ta:engineer（Coder / 実装）
 
 - 役割: Expert Software Engineer（Analyst の設計を高品質なコードへ変換する専門家）
 - 運用ルール:
@@ -62,7 +61,7 @@ iride:technical_auditor   (Auditor) - 検証・セキュリティ監査・品質
   - 技術的ブロッカーや依存問題は即時報告し、推測で修正しない
 - 主なタスク: 機能実装 / 単体・結合テスト生成 / 不具合修正・リファクタ / コード変換・移行
 
-### iride:technical_auditor（Auditor / 検証・監査）
+### ta:auditor（Auditor / 検証・監査）
 
 - 役割: Senior Quality Assurance and Security Auditor（本番環境の「門番」）
 - 検証の原則: 実装が承認済み設計と一致し、安全基準を満たすことを敵対的に検証する
@@ -88,33 +87,33 @@ iride:technical_auditor   (Auditor) - 検証・セキュリティ監査・品質
   "provider": {
     "ollama": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "Ollama (iride)",
+      "name": "Ollama (TA-MBAir)",
       "options": {
-        "baseURL": "http://iride.local:11434/v1"
+        "baseURL": "http://TA-MBAir.local:11434/v1"
       },
       "models": {
-        "iride:ethical_architect": {
+        "ta:architect": {
           "name": "Ethical Architect (Analysis)",
           "limit": {
-            "context": 32768,
+            "context": 65536,
             "output": 8192
           }
         },
-        "iride:technical_auditor": {
+        "ta:auditor": {
           "name": "Technical Auditor (Review)",
           "limit": {
-            "context": 32768,
+            "context": 65536,
             "output": 8192
           }
         },
-        "iride:expert_engineer": {
+        "ta:engineer": {
           "name": "Expert Engineer (Coding)",
           "limit": {
-            "context": 32768,
+            "context": 65536,
             "output": 8192
           },
           "options": {
-            "num_ctx": 32768,
+            "num_ctx": 65536,
             "think": false,
             "temperature": 0,
             "presence_penalty": 0
@@ -123,36 +122,42 @@ iride:technical_auditor   (Auditor) - 検証・セキュリティ監査・品質
       }
     }
   },
-  "model": "iride:ethical_architect"
+  "model": "ta:architect"
 }
 ```
 
 ### 設定のポイント
 
-- 既定モデルは `iride:ethical_architect`（分析・設計フェーズを先に通す）
-- 3 モデルともコンテキストは 32768、最大出力は 8192
-- `iride:expert_engineer` のみ `think: false`（Qwen の思考抑制を OpenCode 側で制御）
-- モデル名は `iride:` 名前空間で統一し、Ollama 上の派生モデル名と一致させる
+- 既定モデルは `ta:architect`（分析・設計フェーズを先に通す）
+- 3 モデルともコンテキストは 65536、最大出力は 8192
+- `ta:engineer` のみ `think: false`（Qwen の思考抑制を OpenCode 側で制御）
+- モデル名は `ta:` 名前空間で統一し、Ollama 上の派生モデル名と一致させる
 
-## 5. 派生モデル作成手順（iride.local）
+## 5. 派生モデル作成手順（TA-MBAir.local）
 
-`models` ディレクトリで、各 Modelfile から派生モデルを作成します。
+TA-MBAir.local 上の `ta:*` モデルは、`models/` の以下の Modelfile から作成します。
+
+| モデル名 | Modelfile |
+|---|---|
+| `ta:architect` | `models/architect.modelfile` |
+| `ta:engineer` | `models/engineer.modelfile` |
+| `ta:auditor` | `models/auditor.modelfile` |
 
 ```bash
-cd /Users/shin1/Dev/Ollama_Study/models
+cd /Users/shin1/Dev/Ollama_Study
 
-ollama create iride:ethical_architect -f ethical_architect.modelfile
-ollama create iride:expert_engineer   -f expert_engineer.modelfile
-ollama create iride:technical_auditor -f technical_auditor.modelfile
+ollama create ta:architect -f models/architect.modelfile
+ollama create ta:engineer  -f models/engineer.modelfile
+ollama create ta:auditor   -f models/auditor.modelfile
 ```
 
 作成後の確認:
 
 ```bash
 ollama list
-ollama show iride:ethical_architect
-ollama show iride:expert_engineer
-ollama show iride:technical_auditor
+ollama show ta:architect
+ollama show ta:engineer
+ollama show ta:auditor
 ```
 
 再作成（Modelfile 変更時）は同じ `ollama create` を再実行します。ベースモデルの重みを共有するため、追加のディスク消費はほとんどありません。
@@ -160,24 +165,24 @@ ollama show iride:technical_auditor
 ### Modelfile の内容
 
 ```dockerfile
-# ethical_architect.modelfile
+# models/architect.modelfile
 FROM gemma4:12b-nvfp4
 PARAMETER temperature 0.2
-PARAMETER num_ctx 32768
+PARAMETER num_ctx 65536
 SYSTEM """..."""   # 倫理戦略家・5 視点分析・ADR 主執筆
 
-# expert_engineer.modelfile
+# models/engineer.modelfile
 FROM qwen3.5:9b-nvfp4
 PARAMETER temperature 0.0
-PARAMETER num_ctx 32768
+PARAMETER num_ctx 65536
 PARAMETER stop "<|im_end|>"
 PARAMETER stop "<|endoftext|>"
 SYSTEM """..."""   # ADR 厳守・Test-First・クリーンコード
 
-# technical_auditor.modelfile
+# models/auditor.modelfile
 FROM qwen3.5:9b-nvfp4
 PARAMETER temperature 0.0
-PARAMETER num_ctx 32768
+PARAMETER num_ctx 65536
 PARAMETER stop "<|im_end|>"
 PARAMETER stop "<|endoftext|>"
 SYSTEM """..."""   # 敵対的検証・セキュリティ監査・Pass/Fail 報告
@@ -185,7 +190,7 @@ SYSTEM """..."""   # 敵対的検証・セキュリティ監査・Pass/Fail 報�
 
 ### stop パラメータについて
 
-`expert_engineer` と `technical_auditor` の以下の 2 行は「停止トークン（Stop Sequences）」を定義しています（同一の Qwen 3.5 ベースのため共通）。
+`ta:engineer` と `ta:auditor` の以下の 2 行は「停止トークン（Stop Sequences）」を定義しています（同一の Qwen 3.5 ベースのため共通）。
 
 ```dockerfile
 PARAMETER stop "<|im_end|>"
@@ -200,9 +205,9 @@ PARAMETER stop "<|endoftext|>"
 
 | フェーズ | モデル | 備考 |
 |---|---|---|
-| 要求分析・設計・ADR・倫理レビュー | iride:ethical_architect | Think ON（既定）。まずここを通す |
-| 実装・コード生成・テスト生成 | iride:expert_engineer | Think OFF（`options.think: false`）。ADR に厳密に従う |
-| 検証・セキュリティ監査・品質保証 | iride:technical_auditor | 敵対的レビュー。Pass/Fail と修正点を報告 |
+| 要求分析・設計・ADR・倫理レビュー | ta:architect | Think ON（既定）。まずここを通す |
+| 実装・コード生成・テスト生成 | ta:engineer | Think OFF（`options.think: false`）。ADR に厳密に従う |
+| 検証・セキュリティ監査・品質保証 | ta:auditor | 敵対的レビュー。Pass/Fail と修正点を報告 |
 
 推奨フロー: **Analyst（設計・ADR）→ Engineer（実装・テスト）→ Auditor（検証・監査）**。
 設計変更が必要になった場合は Auditor/Engineer から Analyst へ戻し、ADR を更新します。
@@ -219,7 +224,7 @@ PARAMETER stop "<|endoftext|>"
 
 ### 実行環境
 
-- **Ollama ホスト**: `iride.local:11434`
+- **Ollama ホスト**: `TA-MBAir.local:11434`
 - **Apple Silicon (MLX)**: `nvfp4` モデルを使用するため必須
 - **ネットワーク**: `OLLAMA_HOST=0.0.0.0:11434` により別マシンからのアクセスを許可
 
@@ -227,7 +232,7 @@ PARAMETER stop "<|endoftext|>"
 
 - **Gemma 4 12B**: 32K/64K 制限は、搭載メモリに対する KV キャッシュ負荷を抑えるため
 - **派生モデル**: ベースモデルの重みを共有するため、追加のディスク容量はほとんど消費しない
-- **Qwen 3.5 9B**: `expert_engineer` / `technical_auditor` で共通利用。パラメータのみで役割を分離
+- **Qwen 3.5 9B**: `ta:engineer` / `ta:auditor` で共通利用。パラメータのみで役割を分離
 
 ## 9. トラブルシューティング
 
@@ -237,6 +242,6 @@ PARAMETER stop "<|endoftext|>"
 | MLX ランナーが起動しない | Apple Silicon か確認。他 OS は GGUF 形式を使用 |
 | 別マシンから接続できない | `OLLAMA_HOST` 設定とファイアウォールを確認 |
 | コンテキストが反映されない | `ollama show` で `num_ctx` を確認し、必要なら再作成 |
-| モデルが見つからない | `ollama list` で `iride:*` を確認し、`ollama create` を再実行 |
+| モデルが見つからない | `ollama list` で `ta:*` を確認し、`ollama create` を再実行 |
 | 応答が途中で切れる | `stop` トークン設定と Modelfile の SYSTEM プロンプトを確認 |
 | KV キャッシュの肥大 | 新規チャットを開始し、不要な時以外は `num_ctx` を大きくしない |

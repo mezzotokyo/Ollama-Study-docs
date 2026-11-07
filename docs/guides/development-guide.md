@@ -215,7 +215,7 @@ docs/
 ## Gemma Analyst
 
 ```text
-num_ctx=32768
+num_ctx=65536
 thinking=true
 temperature=0.2
 ```
@@ -232,7 +232,7 @@ temperature=0.2
 ## Qwen Coder
 
 ```text
-num_ctx=32768
+num_ctx=65536
 thinking=false
 temperature=0
 ```

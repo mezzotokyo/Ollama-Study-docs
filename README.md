@@ -37,11 +37,11 @@ AI（LLM）を単なる「コード生成ツール」として使うだけでは
 - **開発標準（Development Standards）**: `docs/standards/`
   - 開発フロー、ADR、検証基準など、開発の「ルール」を定義。
 - **モデル構成（Model Configuration）**: `docs/setup/ollama-models.md`
-  - 役割ごとのモデル選定やパラメータ設定。
+  - 役割ごとのモデル選定やパラメータ設定。Modelfile は `models/` に配置。
 - **実践的なTips**: `docs/tips/`
   - コンテキスト圧縮や、AIとの共創におけるコツ。
 - **共創のプロセス（Persona & Process）**: `models/`
-  - ペルソナ定義（Modelfile）。共創の過程は `docs/notes/` を参照。
+  - ペルソナ定義（Modelfile）は `models/`。共創の過程は `docs/notes/` を参照。
 
 ---
 
@@ -51,10 +51,10 @@ AI（LLM）を単なる「コード生成ツール」として使うだけでは
 
 | フェーズ | ツール | ペルソナ（モデル） | 成果物 |
 |---|---|---|---|
-| 1. 分析 | Cherry Studio | Analyst（Ethical Architect / `iride:ethical_architect`） | 要件分析・ADR |
+| 1. 分析 | Cherry Studio | Analyst（Ethical Architect / `ta:architect`） | 要件分析・ADR |
 | 2. 承認 | 人間 | — | 承認済み ADR |
-| 3. 実装 | OpenCode | Coder（Expert Engineer / `iride:expert_engineer`） | コード・テスト |
-| 4. 検証 | OpenCode | Auditor（Technical Auditor / `iride:technical_auditor`） | Pass/Fail・指摘 |
+| 3. 実装 | OpenCode | Coder（Expert Engineer / `ta:engineer`） | コード・テスト |
+| 4. 検証 | OpenCode | Auditor（Technical Auditor / `ta:auditor`） | Pass/Fail・指摘 |
 
 ### ステップ 1: 分析 — Cherry Studio / Analyst（Ethical Architect）
 
@@ -90,11 +90,11 @@ Cherry Studio を開き、新しい Session を作成し、ペルソナ設定で
 
 ### ステップ 3: 実装 — OpenCode / Coder（Expert Engineer）
 
-承認済み ADR をもとに、OpenCode の `iride:expert_engineer` で実装とテストを生成します。ADR から逸脱する必要が出た場合は実装を止め、ステップ 1 の再分析に戻します。
+承認済み ADR をもとに、OpenCode の `ta:engineer` で実装とテストを生成します。ADR から逸脱する必要が出た場合は実装を止め、ステップ 1 の再分析に戻します。
 
 ### ステップ 4: 検証 — OpenCode / Auditor（Technical Auditor）
 
-OpenCode の `iride:technical_auditor` で、実装が ADR に適合しているか、セキュリティ・回帰・副作用に問題がないかを検証します。Pass/Fail と修正点を確認し、必要ならステップ 3 に戻します。
+OpenCode の `ta:auditor` で、実装が ADR に適合しているか、セキュリティ・回帰・副作用に問題がないかを検証します。Pass/Fail と修正点を確認し、必要ならステップ 3 に戻します。
 
 完了！承認済み ADR に基づく実装・テストと、検証結果が揃います。
 
@@ -155,11 +155,11 @@ AIとの共創において、**「記憶の断絶」**は最大の敵です。
 - **開発標準（Development Standards）**: `docs/standards/`
   - 開発フロー、ADR、検証基準など、開発の「ルール」を定義。
 - **モデル構成（Model Configuration）**: `docs/setup/ollama-models.md`
-  - 役割ごとのモデル選定やパラメータ設定。
+  - 役割ごとのモデル選定やパラメータ設定。Modelfile は `models/` に配置。
 - **実践的なTips**: `docs/tips/`
   - コンテキスト圧縮や、AIとの共創におけるコツ。
 - **共創のプロセス（Persona & Process）**: `models/`
-  - ペルソナ定義（Modelfile）。共創の過程は `docs/notes/` を参照。
+  - ペルソナ定義（Modelfile）は `models/`。共創の過程は `docs/notes/` を参照。
 
 ---
 

@@ -7,24 +7,26 @@ OpenCode から利用する Ollama 派生モデル（ペルソナ）の Modelfil
 
 | Modelfile | モデル名 | 役割 | ベース |
 |---|---|---|---|
-| `ethical_architect.modelfile` | `iride:ethical_architect` | Analyst（設計・ADR・倫理分析） | `gemma4:12b-nvfp4` |
-| `expert_engineer.modelfile` | `iride:expert_engineer` | Coder（実装・テスト生成） | `qwen3.5:9b-nvfp4` |
-| `technical_auditor.modelfile` | `iride:technical_auditor` | Auditor（検証・セキュリティ監査） | `qwen3.5:9b-nvfp4` |
+| `architect.modelfile` | `ta:architect` | Analyst（設計・ADR・倫理分析） | `gemma4:12b-nvfp4` |
+| `engineer.modelfile` | `ta:engineer` | Coder（実装・テスト生成） | `qwen3.5:9b-nvfp4` |
+| `auditor.modelfile` | `ta:auditor` | Auditor（検証・セキュリティ監査） | `qwen3.5:9b-nvfp4` |
 
 ## 作成・再作成
 
-```bash
-cd /Users/shin1/Dev/Ollama_Study/models
+モデル作成には、このディレクトリの Modelfile を使用します。
 
-ollama create iride:ethical_architect -f ethical_architect.modelfile
-ollama create iride:expert_engineer   -f expert_engineer.modelfile
-ollama create iride:technical_auditor -f technical_auditor.modelfile
+```bash
+cd /Users/shin1/Dev/Ollama_Study
+
+ollama create ta:architect -f models/architect.modelfile
+ollama create ta:engineer  -f models/engineer.modelfile
+ollama create ta:auditor   -f models/auditor.modelfile
 ```
 
 リモートの Ollama ホストへ反映する場合:
 
 ```bash
-OLLAMA_HOST=http://iride.local:11434 ollama create iride:technical_auditor -f technical_auditor.modelfile
+OLLAMA_HOST=http://TA-MBAir.local:11434 ollama create ta:auditor -f models/auditor.modelfile
 ```
 
 ## 関連ドキュメント

@@ -3,33 +3,33 @@
   "provider": {
     "ollama": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "Ollama (iride)",
+      "name": "Ollama (TA-MBAir)",
       "options": {
-        "baseURL": "http://iride.local:11434/v1"
+        "baseURL": "http://TA-MBAir.local:11434/v1"
       },
       "models": {
-        "iride:ethical_architect": {
+        "ta:architect": {
           "name": "Ethical Architect (Analysis)",
           "limit": {
-            "context": 32768,
+            "context": 65536,
             "output": 8192
           }
         },
-        "iride:technical_auditor": {
+        "ta:auditor": {
           "name": "Technical Auditor (Review)",
           "limit": {
-            "context": 32768,
+            "context": 65536,
             "output": 8192
           }
         },
-        "iride:expert_engineer": {
+        "ta:engineer": {
           "name": "Expert Engineer (Coding)",
           "limit": {
-            "context": 32768,
+            "context": 65536,
             "output": 8192
           },
           "options": {
-            "num_ctx": 32768,
+            "num_ctx": 65536,
             "think": false,
             "temperature": 0,
             "presence_penalty": 0
@@ -38,5 +38,5 @@
       }
     }
   },
-  "model": "iride:ethical_architect"
+  "model": "ta:architect"
 }

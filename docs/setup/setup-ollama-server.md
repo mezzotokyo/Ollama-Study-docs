@@ -8,7 +8,7 @@ LAN 内の 1 台を **常設の Ollama 推論サーバー**として構築し、
 - **サーバー**: 常時稼働する常設サーバー（ログアウト・再起動後も自動起動）
 - **プロバイダー**: Ollama（LM Studio は使用しない）
 - **API エンドポイント**: `http://<サーバーIP>:11434/v1`（OpenAI 互換）
-- **接続例**: `http://192.168.20.34:11434/v1`
+- **接続例**: `http://TA-MBAir.local:11434/v1`
 
 ## 1. 構成
 
@@ -54,37 +54,41 @@ launchctl bootout gui/$(id -u)/com.ollama.ollama 2>/dev/null || true
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>Label</key>
-  <string>com.ollama.server</string>
-  <key>ProgramArguments</key>
-  <array>
-    <string>/Applications/Ollama.app/Contents/Resources/ollama</string>
-    <string>serve</string>
-  </array>
-  <key>EnvironmentVariables</key>
-  <dict>
-    <key>OLLAMA_HOST</key>
-    <string>0.0.0.0:11434</string>
-    <key>OLLAMA_KEEP_ALIVE</key>
-    <string>24h</string>
-    <key>OLLAMA_MODELS</key>
-    <string>/Users/Shared/ollama/models</string>
-  </dict>
-  <key>RunAtLoad</key>
-  <true/>
-  <key>KeepAlive</key>
-  <true/>
-  <key>StandardOutPath</key>
-  <string>/var/log/ollama.out.log</string>
-  <key>StandardErrorPath</key>
-  <string>/var/log/ollama.err.log</string>
+	<key>KeepAlive</key>
+	<true/>
+	<key>Label</key>
+	<string>com.ollama.serve</string>
+	<key>ProcessType</key>
+	<string>Background</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/bin/sudo</string>
+		<string>-u</string>
+		<string>ta000</string>
+		<string>-H</string>
+		<string>/usr/bin/env</string>
+		<string>HOME=/Users/ta000</string>
+		<string>USER=ta000</string>
+		<string>LOGNAME=ta000</string>
+		<string>OLLAMA_HOST=0.0.0.0:11434</string>
+		<string>OLLAMA_MODELS=/Users/ta000/.ollama/models</string>
+		<string>OLLAMA_KEEP_ALIVE=24h</string>
+		<string>/Applications/Ollama.app/Contents/Resources/ollama</string>
+		<string>serve</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/var/log/ollama.err.log</string>
+	<key>StandardOutPath</key>
+	<string>/var/log/ollama.out.log</string>
 </dict>
 </plist>
 ```
 
-> - `launchctl setenv` で設定した環境変数は LaunchDaemon には引き継がれません。`OLLAMA_HOST` は plist 内の `EnvironmentVariables` に直接記載します。
-> - デーモンは root として動作するため、モデルの格納先を `/Users/Shared/ollama/models` など明示します。既存のモデルがある場合は、そのパスへ移すか、改めて `ollama pull` してください。
-> - ブラウザから直接 CORS アクセスしたい場合のみ `OLLAMA_ORIGINS` を同 `EnvironmentVariables` に追加します（opencode からの利用では不要）。
+> - `launchctl setenv` で設定した環境変数は LaunchDaemon には引き継がれません。`OLLAMA_HOST` などの環境変数は、`ProgramArguments` 内の `/usr/bin/env` に直接記載します。
+> - 本 plist は `sudo -u ta000` で Ollama を起動するため、モデルの格納先は `/Users/ta000/.ollama/models` です。既存のモデルがある場合は、そのパスへ移すか、改めて `ollama pull` してください。
+> - ブラウザから直接 CORS アクセスしたい場合のみ `OLLAMA_ORIGINS` を `ProgramArguments` の `/usr/bin/env` に追加します（opencode からの利用では不要）。
 
 所有者・権限を設定してロードします。
 
@@ -96,7 +100,7 @@ sudo launchctl bootstrap system /Library/LaunchDaemons/com.ollama.serve.plist
 
 #### (4) 確認
 ```sh
-sudo launchctl print system/com.ollama.server | head -n 20
+sudo launchctl print system/com.ollama.serve | head -n 20
 ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null
 curl http://<サーバーIP>:11434/api/version
 ```
@@ -190,9 +194,9 @@ nssm remove Ollama confirm
 
 | opencode.json のモデル ID | 名前 | ベースモデル（取得コマンド） |
 |---------------------------|------|------------------------------|
-| `iride:ethical_architect` | Ethical Architect (Analysis) | `gemma4:12b-nvfp4`（`ollama pull gemma4:12b-nvfp4`） |
-| `iride:expert_engineer` | Expert Engineer (Coding) | `qwen3.5:9b-nvfp4`（`ollama pull qwen3.5:9b-nvfp4`） |
-| `iride:technical_auditor` | Technical Auditor (Review) | `qwen3.5:9b-nvfp4`（`ollama pull qwen3.5:9b-nvfp4`） |
+| `ta:architect` | Ethical Architect (Analysis) | `gemma4:12b-nvfp4`（`ollama pull gemma4:12b-nvfp4`） |
+| `ta:engineer` | Expert Engineer (Coding) | `qwen3.5:9b-nvfp4`（`ollama pull qwen3.5:9b-nvfp4`） |
+| `ta:auditor` | Technical Auditor (Review) | `qwen3.5:9b-nvfp4`（`ollama pull qwen3.5:9b-nvfp4`） |
 
 ```sh
 ollama pull gemma4:12b-nvfp4
@@ -200,12 +204,12 @@ ollama pull qwen3.5:9b-nvfp4
 ollama list
 ```
 
-派生モデル（`iride:*`）は `models/*.modelfile` から作成します。手順の詳細は [モデル構成（Ollama Models）](ollama-models.md) を参照してください。
+派生モデル（`ta:*`）は `models/*.modelfile` から作成します。手順の詳細は [モデル構成（Ollama Models）](ollama-models.md) を参照してください。
 
 > 名前に `-mlx` を含むモデルは **Apple Silicon（Metal）向けの量子化モデル**です。実行には Apple Silicon の macOS（サーバー）が必要で、Intel Mac では動作しません。ベースモデルを pull する際も `-mlx` 付きのタグを使用してください。
 
 ### 3.2 参考: エイリアス作成（context 制限）
-以下は、context 長を制限した別名モデルを作る場合の例です（現在の `iride:*` 構成では、`models/*.modelfile` 内で `num_ctx` を指定済みのため必須ではありません）。
+以下は、context 長を制限した別名モデルを作る場合の例です（現在の `ta:*` 構成では、`models/*.modelfile` 内で `num_ctx` を指定済みのため必須ではありません）。
 
 例（`gemma4:e4b-mlx-64k`、`num_ctx=65536`）:
 
@@ -259,7 +263,7 @@ ollama list
 
 クライアントマシン（別マシン）のリポジトリで `opencode.json` を設定します。
 
-> 以下は別構成の設定例です。本リポジトリの最新設定（`iride:*`）はルートの `opencode.json` と [モデル構成（Ollama Models）](ollama-models.md) を参照してください。
+> 以下は別構成の設定例です。本リポジトリの最新設定（`ta:*`）はルートの `opencode.json` と [モデル構成（Ollama Models）](ollama-models.md) を参照してください。
 
 ```json
 {
@@ -308,7 +312,7 @@ ollama list
 }
 ```
 
-- `<サーバーIP>` はサーバーマシンの LAN IP に置き換えます（例: `192.168.20.34`）
+- `<サーバーIP>` はサーバーマシンの LAN IP またはホスト名に置き換えます（例: `TA-MBAir.local`）
 - モデル ID はサーバー上の `ollama list` のタグと一致させます
 - 接続には `@ai-sdk/openai-compatible` を使用します
 
