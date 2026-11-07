@@ -16,7 +16,7 @@ OpenCode から利用する Ollama 派生モデル（ペルソナ）の Modelfil
 モデル作成には、このディレクトリの Modelfile を使用します。
 
 ```bash
-cd /Users/shin1/Dev/Ollama_Study
+cd ..
 
 ollama create ta:architect -f models/architect.modelfile
 ollama create ta:engineer  -f models/engineer.modelfile

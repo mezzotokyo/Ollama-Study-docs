@@ -16,7 +16,7 @@ LaunchDaemon (`/Library/LaunchDaemons/com.ollama.serve.plist`) にて以下を�
 <key>EnvironmentVariables</key>
 <dict>
     <key>HOME</key>
-    <string>/Users/shin1</string>
+    <string>/Users/ta000</string>
 
     <key>OLLAMA_HOST</key>
     <string>0.0.0.0:11434</string>

@@ -2,7 +2,7 @@
 
 最終更新: 2026-11-07
 対象環境: TA-MBAir.local:11434（Ollama v0.40.15 / macOS + Apple Silicon MLX）
-対象リポジトリ: `/Users/shin1/Dev/Ollama_Study`
+対象リポジトリ: `.`（ドキュメントルート）
 
 ## 1. 概要
 
@@ -79,7 +79,7 @@ ta:auditor     (Auditor) - 検証・セキュリティ監査・品質保証
 
 ## 4. OpenCode 設定
 
-設定ファイル: `/Users/shin1/Dev/Ollama_Study/opencode.json`
+設定ファイル: `./opencode.json`
 
 ```json
 {
@@ -144,7 +144,7 @@ TA-MBAir.local 上の `ta:*` モデルは、`models/` の以下の Modelfile か
 | `ta:auditor` | `models/auditor.modelfile` |
 
 ```bash
-cd /Users/shin1/Dev/Ollama_Study
+cd ../..
 
 ollama create ta:architect -f models/architect.modelfile
 ollama create ta:engineer  -f models/engineer.modelfile
