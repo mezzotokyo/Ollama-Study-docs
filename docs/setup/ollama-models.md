@@ -34,7 +34,7 @@ ta:auditor     (Auditor) - 検証・セキュリティ監査・品質保証
 | モデル名 | 用途 | ベース | num_ctx | temperature | その他 | 備考 |
 |---|---|---|---|---|---|---|
 | ta:architect | Analyst（設計・レビュー・ADR・倫理分析） | gemma4:12b-nvfp4 | 65536 | 0.2 | SYSTEM プロンプト | 既定モデル。5 視点分析と倫理リスクの早期指摘を担当 |
-| ta:engineer | Coder（実装・コード生成・テスト生成・リファクタ） | qwen3.5:9b-nvfp4 | 65536 | 0.0 | stop `<\|im_end\|>`, `<\|endoftext\|>` | OpenCode 側で `reasoning_effort: "none"`, `presence_penalty: 0` を指定 |
+| ta:engineer | Coder（実装・コード生成・テスト生成・リファクタ） | qwen3.5:9b-nvfp4 | 65536 | 0.0 | stop `<\|im_end\|>`, `<\|endoftext\|>` | OpenCode 側で `reasoning_effort: "none"`, `presence_penalty: 0` を指定。出力制限は 16384 トークン |
 | ta:auditor | Auditor（検証・セキュリティ監査・品質保証） | qwen3.5:9b-nvfp4 | 65536 | 0.0 | stop `<\|im_end\|>`, `<\|endoftext\|>` | 敵対的レビュー、ADR 適合性の確認を担当 |
 
 ## 3. ペルソナ定義（Modelfile の SYSTEM プロンプト概要）
@@ -88,6 +88,9 @@ ta:auditor     (Auditor) - 検証・セキュリティ監査・品質保証
     "ollama": {
       "name": "Ollama (TA-MBAir)",
       "package": "@opencode/ai/providers/openai-compatible",
+      "compatibility": {
+        "maxTokensField": "max_tokens"
+      },
       "settings": {
         "baseURL": "http://TA-MBAir.local:11434/v1"
       },
@@ -110,7 +113,7 @@ ta:auditor     (Auditor) - 検証・セキュリティ監査・品質保証
           "name": "Expert Engineer (Coding)",
           "limit": {
             "context": 65536,
-            "output": 8192
+            "output": 16384
           },
           "body": {
             "num_ctx": 65536,
@@ -130,9 +133,10 @@ ta:auditor     (Auditor) - 検証・セキュリティ監査・品質保証
 
 - OpenCode 2.x のネイティブ形式（`providers` / `package` / `settings` / `body`）で記述する
 - 既定モデルは `ollama/ta:architect`（分析・設計フェーズを先に通す）
-- 3 モデルともコンテキストは 65536、最大出力は 8192
+- `ta:architect` と `ta:auditor` は出力制限 8192、`ta:engineer` は 16384
 - `ta:engineer` のみ `reasoning_effort: "none"`（Qwen の推論を OpenCode 側で OFF）
 - モデル名は `ta:` 名前空間で統一し、Ollama 上の派生モデル名と一致させる
+- `compatibility.maxTokensField: "max_tokens"` で他ツールとの互換性を確保
 
 ## 5. 派生モデル作成手順（TA-MBAir.local）
 
