@@ -1,6 +1,6 @@
 # Ollama 推論サーバー構築手順（常駐化・macOS / Windows）
 
-LAN 内の 1 台を **常設の Ollama 推論サーバー**として構築し、別マシン上の **opencode** から OpenAI 互換 API（`<サーバーIP>:11434/v1`）で接続するための手順。
+LAN 内の 1 台を **常設の Ollama 推論サーバー**として構築し、別マシン上の **opencode 2.x** から OpenAI 互換 API（`<サーバーIP>:11434/v1`）で接続するための手順。
 
 ## 概要
 
@@ -8,7 +8,7 @@ LAN 内の 1 台を **常設の Ollama 推論サーバー**として構築し、
 - **サーバー**: 常時稼働する常設サーバー（ログアウト・再起動後も自動起動）
 - **プロバイダー**: Ollama（LM Studio は使用しない）
 - **API エンドポイント**: `http://<サーバーIP>:11434/v1`（OpenAI 互換）
-- **接続例**: `http://TA-MBAir.local:11434/v1`
+- **接続例**: `http://192.168.20.34:11434/v1`
 
 ## 1. 構成
 
@@ -54,41 +54,40 @@ launchctl bootout gui/$(id -u)/com.ollama.ollama 2>/dev/null || true
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>KeepAlive</key>
-	<true/>
-	<key>Label</key>
-	<string>com.ollama.serve</string>
-	<key>ProcessType</key>
-	<string>Background</string>
-	<key>ProgramArguments</key>
-	<array>
-		<string>/usr/bin/sudo</string>
-		<string>-u</string>
-		<string>ta000</string>
-		<string>-H</string>
-		<string>/usr/bin/env</string>
-		<string>HOME=/Users/ta000</string>
-		<string>USER=ta000</string>
-		<string>LOGNAME=ta000</string>
-		<string>OLLAMA_HOST=0.0.0.0:11434</string>
-		<string>OLLAMA_MODELS=/Users/ta000/.ollama/models</string>
-		<string>OLLAMA_KEEP_ALIVE=24h</string>
-		<string>/Applications/Ollama.app/Contents/Resources/ollama</string>
-		<string>serve</string>
-	</array>
-	<key>RunAtLoad</key>
-	<true/>
-	<key>StandardErrorPath</key>
-	<string>/var/log/ollama.err.log</string>
-	<key>StandardOutPath</key>
-	<string>/var/log/ollama.out.log</string>
+    <key>Label</key>
+    <string>com.ollama.serve</string>
+    <key>UserName</key>
+    <string>YOUR_USERNAME</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOME</key>
+        <string>/Users/YOUR_USERNAME</string>
+        <key>OLLAMA_HOST</key>
+        <string>0.0.0.0:11434</string>
+    	<key>OLLAMA_KEEP_ALIVE</key>
+    	<string>24h</string>
+    </dict>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Applications/Ollama.app/Contents/Resources/ollama</string>
+        <string>serve</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/Users/YOUR_USERNAME/Library/Logs/ollama.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/YOUR_USERNAME/Library/Logs/ollama.log</string>
 </dict>
 </plist>
 ```
 
-> - `launchctl setenv` で設定した環境変数は LaunchDaemon には引き継がれません。`OLLAMA_HOST` などの環境変数は、`ProgramArguments` 内の `/usr/bin/env` に直接記載します。
-> - 本 plist は `sudo -u ta000` で Ollama を起動するため、モデルの格納先は `/Users/ta000/.ollama/models` です。既存のモデルがある場合は、そのパスへ移すか、改めて `ollama pull` してください。
-> - ブラウザから直接 CORS アクセスしたい場合のみ `OLLAMA_ORIGINS` を `ProgramArguments` の `/usr/bin/env` に追加します（opencode からの利用では不要）。
+> - `YOUR_USERNAME` は Ollama を実行する実際のユーザー名に置き換えてください（例: `alice`）。
+> - `launchctl setenv` で設定した環境変数は LaunchDaemon には引き継がれません。`OLLAMA_HOST` は plist 内の `EnvironmentVariables` に直接記載します。
+> - `UserName` と `HOME` を指定しているため、デーモンはそのユーザーとして動作し、モデルは既定で `~/.ollama/models` に格納されます。別の場所に置く場合は `OLLAMA_MODELS` を `EnvironmentVariables` に追加してください。
+> - ブラウザから直接 CORS アクセスしたい場合のみ `OLLAMA_ORIGINS` を同 `EnvironmentVariables` に追加します（opencode からの利用では不要）。
 
 所有者・権限を設定してロードします。
 
@@ -185,70 +184,57 @@ nssm remove Ollama confirm
 
 ## 3. モデルの準備（サーバー上で実行）
 
-サーバーが常駐稼働した状態で、**サーバーマシン上**でモデルを取得・エイリアス作成します。
+サーバーが常駐稼働した状態で、**サーバーマシン上**でモデルを確認・エイリアス作成します。
 
-### 3.1 ベースモデルの取得
-[ollama.com/library](https://ollama.com/library) から必要なモデルを pull します。
+### 3.1 モデルの確認
+本リポジトリの `opencode.json` が参照するモデルは、iride サーバー上の `ollama list` で確認できます。
 
-本リポジトリの `opencode.json` で定義しているモデルとベースモデル:
-
-| opencode.json のモデル ID | 名前 | ベースモデル（取得コマンド） |
-|---------------------------|------|------------------------------|
-| `ta:architect` | Ethical Architect (Analysis) | `gemma4:12b-nvfp4`（`ollama pull gemma4:12b-nvfp4`） |
-| `ta:engineer` | Expert Engineer (Coding) | `qwen3.5:9b-nvfp4`（`ollama pull qwen3.5:9b-nvfp4`） |
-| `ta:auditor` | Technical Auditor (Review) | `qwen3.5:9b-nvfp4`（`ollama pull qwen3.5:9b-nvfp4`） |
+| opencode.json のモデル ID | 名前 | 備考 |
+|---------------------------|------|------|
+| `iride:technical_auditor` | Iride Technical Auditor (Review) | サーバー上のカスタムモデル |
+| `iride:expert_engineer` | Iride Expert Engineer (Coding) | サーバー上のカスタムモデル |
+| `iride:ethical_architect` | Iride Ethical Architect (Analysis) | サーバー上のカスタムモデル |
+| `qwen3.5:9b-nvfp4` | Qwen3.5 | サーバー上の MLX モデル |
+| `gemma4:12b-nvfp4` | Gemma4 | サーバー上の MLX モデル |
+| `granite4.1:3b` | Granite 3B (Light Weight) | 軽量モデル（V2 の `agents.title.model` 用） |
 
 ```sh
-ollama pull gemma4:12b-nvfp4
-ollama pull qwen3.5:9b-nvfp4
 ollama list
 ```
 
-派生モデル（`ta:*`）は `models/*.modelfile` から作成します。手順の詳細は [モデル構成（Ollama Models）](ollama-models.md) を参照してください。
+> `iride:*` はシステムプロンプト等を組み込んだカスタムモデルです。別マシンで同じ構成を再現する場合は、各モデルの Modelfile も管理してください。
 
-> 名前に `-mlx` を含むモデルは **Apple Silicon（Metal）向けの量子化モデル**です。実行には Apple Silicon の macOS（サーバー）が必要で、Intel Mac では動作しません。ベースモデルを pull する際も `-mlx` 付きのタグを使用してください。
+### 3.2 エイリアス作成（context 制限の例）
+context 長を制限したエイリアスを作る場合は、Modelfile でベースモデルから派生させます。以下は例です（現在の `opencode.json` はエイリアスを使わず、サーバー側のモデルを直接参照しています）。
 
-### 3.2 参考: エイリアス作成（context 制限）
-以下は、context 長を制限した別名モデルを作る場合の例です（現在の `ta:*` 構成では、`models/*.modelfile` 内で `num_ctx` を指定済みのため必須ではありません）。
-
-例（`gemma4:e4b-mlx-64k`、`num_ctx=65536`）:
+例（`gemma4:12b-nvfp4-32k`、`num_ctx=32768`）:
 
 ```sh
-cat > /tmp/Modelfile.gemma4.e4b.mlx64k <<'EOF'
-FROM gemma4:e4b-mlx
-PARAMETER num_ctx 65536
-EOF
-ollama create gemma4:e4b-mlx-64k -f /tmp/Modelfile.gemma4.e4b.mlx64k
-```
-
-例（`gemma4:12b-mlx-32k`、`num_ctx=32768`）:
-
-```sh
-cat > /tmp/Modelfile.gemma4.12b.mlx32k <<'EOF'
-FROM gemma4:12b-mlx
+cat > /tmp/Modelfile.gemma4.12b.nvfp4.32k <<'EOF'
+FROM gemma4:12b-nvfp4
 PARAMETER num_ctx 32768
 EOF
-ollama create gemma4:12b-mlx-32k -f /tmp/Modelfile.gemma4.12b.mlx32k
+ollama create gemma4:12b-nvfp4-32k -f /tmp/Modelfile.gemma4.12b.nvfp4.32k
 ```
 
-例（`qwen3.5:4b-mlx-64k`、`num_ctx=65536`）:
+例（`qwen3.5:9b-nvfp4-64k`、`num_ctx=65536`）:
 
 ```sh
-cat > /tmp/Modelfile.qwen3.5.4b.mlx64k <<'EOF'
-FROM qwen3.5:4b-mlx
+cat > /tmp/Modelfile.qwen3.5.9b.nvfp4.64k <<'EOF'
+FROM qwen3.5:9b-nvfp4
 PARAMETER num_ctx 65536
 EOF
-ollama create qwen3.5:4b-mlx-64k -f /tmp/Modelfile.qwen3.5.4b.mlx64k
+ollama create qwen3.5:9b-nvfp4-64k -f /tmp/Modelfile.qwen3.5.9b.nvfp4.64k
 ```
 
-例（`qwen3:8b-40k`、`num_ctx=40960`）:
+例（`granite4.1:3b-8k`、`num_ctx=8192`）:
 
 ```sh
-cat > /tmp/Modelfile.qwen3.8b.40k <<'EOF'
-FROM qwen3:8b
-PARAMETER num_ctx 40960
+cat > /tmp/Modelfile.granite4.1.3b.8k <<'EOF'
+FROM granite4.1:3b
+PARAMETER num_ctx 8192
 EOF
-ollama create qwen3:8b-40k -f /tmp/Modelfile.qwen3.8b.40k
+ollama create granite4.1:3b-8k -f /tmp/Modelfile.granite4.1.3b.8k
 ```
 
 作成後に一覧を確認します。
@@ -259,63 +245,85 @@ ollama list
 
 > context 長を大きくすると KV キャッシュの分だけメモリ使用量が増加します。サーバーのメモリ量に応じて調整してください。
 
-## 4. クライアント側設定（opencode）
+## 4. クライアント側設定（opencode 2.x）
 
-クライアントマシン（別マシン）のリポジトリで `opencode.json` を設定します。
-
-> 以下は別構成の設定例です。本リポジトリの最新設定（`ta:*`）はルートの `opencode.json` と [モデル構成（Ollama Models）](ollama-models.md) を参照してください。
+クライアントマシン（別マシン）のリポジトリで `opencode.json` を設定します。V2 の
+ネイティブ形式では、プロバイダは `providers`、接続設定は `settings` にまとめます。
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
   "providers": {
     "ollama": {
-      "name": "Ollama (local)",
-      "package": "@opencode/ai/providers/openai-compatible",
+      "name": "Ollama (iride)",
       "settings": {
         "baseURL": "http://<サーバーIP>:11434/v1"
       },
       "models": {
-        "gemma4:e4b-mlx": {
-          "name": "Gemma 4 E4B (Ollama)"
-        },
-        "gemma4:e4b-mlx-64k": {
-          "name": "Gemma 4 E4B (64K)",
-          "limit": {
-            "context": 65536,
-            "output": 8192
-          }
-        },
-        "gemma4:12b-mlx-32k": {
-          "name": "Gemma 4 12B (32K)",
+        "iride:technical_auditor": {
+          "name": "Iride Technical Auditor (Review)",
           "limit": {
             "context": 32768,
             "output": 8192
           }
         },
-        "qwen3.5:4b-mlx-64k": {
-          "name": "Qwen3.5 4B (64K)",
+        "iride:expert_engineer": {
+          "name": "Iride Expert Engineer (Coding)",
+          "limit": {
+            "context": 32768,
+            "output": 8192
+          },
+          "body": {
+            "temperature": 0,
+            "presence_penalty": 0
+          }
+        },
+        "iride:ethical_architect": {
+          "name": "Iride Ethical Architect (Analysis)",
           "limit": {
             "context": 65536,
             "output": 8192
           }
         },
-        "qwen3:8b-40k": {
-          "name": "Qwen3 8B (40K)",
+        "qwen3.5:9b-nvfp4": {
+          "name": "Qwen3.5",
           "limit": {
-            "context": 40960,
+            "context": 4096,
+            "output": 8192
+          }
+        },
+        "gemma4:12b-nvfp4": {
+          "name": "Gemma4",
+          "limit": {
+            "context": 4096,
+            "output": 8192
+          }
+        },
+        "granite4.1:3b": {
+          "name": "Granite 3B (Light Weight)",
+          "limit": {
+            "context": 4096,
             "output": 8192
           }
         }
       }
     }
+  },
+  "model": "ollama/iride:expert_engineer",
+  "agents": {
+    "title": {
+      "model": "ollama/granite4.1:3b"
+    }
   }
 }
 ```
 
-- `<サーバーIP>` はサーバーマシンの LAN IP またはホスト名に置き換えます（例: `TA-MBAir.local`）
+- `<サーバーIP>` はサーバーマシンの LAN IP に置き換えます（例: `192.168.20.34`）
 - モデル ID はサーバー上の `ollama list` のタグと一致させます
-- 接続には V2 純正の `@opencode/ai/providers/openai-compatible` を使用します
+- V2 は組み込みの Ollama プロバイダを使用します。`settings.baseURL` には OpenAI 互換 API の URL（`/v1` を含む）を指定します
+- サンプリングパラメータ（`temperature` など）はモデルの `body` に置きます。`settings` はプロバイダパッケージの設定用です
+- 既定モデルは `model`、title 生成用の小モデルは `agents.title.model` に指定します（V1 の `small_model` に相当）
+- V1 の `provider` / `npm` / `options` 形式も引き続き読み込まれますが、新規設定は V2 形式（`providers` / `package` / `settings`）を使用してください
 
 ## 5. 他の開発支援ツールからの接続
 
@@ -356,25 +364,25 @@ VS Code に Continue 拡張を導入し、`~/.continue/config.yaml` にモデル
 models:
   - name: Gemma 4 12B (32K)
     provider: ollama
-    model: gemma4:12b-mlx-32k
+    model: gemma4:12b-nvfp4-32k
     apiBase: http://<サーバーIP>:11434
     roles: [chat, edit, apply]
     defaultCompletionOptions:
       contextLength: 32768
       maxTokens: 8192
       temperature: 0.2
-  - name: Qwen3 8B (40K)
+  - name: Qwen3.5 9B (64K)
     provider: ollama
-    model: qwen3:8b-40k
+    model: qwen3.5:9b-nvfp4-64k
     apiBase: http://<サーバーIP>:11434
     roles: [chat, edit, apply]
     defaultCompletionOptions:
-      contextLength: 40960
+      contextLength: 65536
       maxTokens: 8192
       temperature: 0.1
 ```
 
-- `defaultCompletionOptions` の `contextLength` はサーバー側エイリアスの `num_ctx`（32K / 40K）に揃え、`maxTokens` は `opencode.json` の `output`（8192）と揃えます。`temperature` はコーディング向けに低め（0.1〜0.2）にします
+- `defaultCompletionOptions` の `contextLength` はサーバー側エイリアスの `num_ctx`（32K / 64K）に揃え、`maxTokens` は `opencode.json` の `output`（8192）と揃えます。`temperature` はコーディング向けに低め（0.1〜0.2）にします
 - Continue は**インライン補完**にも対応します（小さめのモデルを `roles: [autocomplete]` に割り当てる）
 - VS Code 拡張の Cline / Roo Code / Kilo Code、チャット UI の Open WebUI / LibreChat なども同様に OpenAI 互換エンドポイントを指定できます
 
@@ -391,13 +399,15 @@ curl http://<サーバーIP>:11434/v1/models
 
 Windows（PowerShell）では `curl.exe` または `Invoke-RestMethod` を使用してください。
 
-opencode からモデルが選択・利用できることを確認します。CLI では `opencode models`、TUI では `/models` で一覧を確認できます。
+opencode からモデルが選択・利用できることを確認します。TUI では `/models` を実行し、
+Ollama のモデルが一覧に表示されて選択できることを確認します。
 
 ## 7. 切り替え・モデル評価
 
-プロバイダを切り替える場合は `opencode.json` の `"model"` を `provider/model` 形式（例: `ollama/ta:engineer`）で書き換えるか、opencode 起動時のプロバイダ選択で Ollama 側を選びます。
+プロバイダを切り替える場合は `opencode.json` の `"model"` を書き換えるか、opencode 起動時のプロバイダ選択で Ollama 側を選びます。
 
-`opencode.json` の変更は OpenCode 2.x では自動的に反映されます。反映されない場合は `/reload` で設定を再読み込みしてください。
+opencode 2.x は `opencode.json` の変更を自動で再読み込みします。反映されない場合は
+TUI で `/reload` を実行するか、`opencode reload` で設定を再読み込みします。
 
 ## 8. 参考
 

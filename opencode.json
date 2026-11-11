@@ -4,6 +4,9 @@
     "ollama": {
       "name": "Ollama (TA-MBAir)",
       "package": "@opencode/ai/providers/openai-compatible",
+      "compatibility": {
+        "maxTokensField": "max_tokens"
+      },
       "settings": {
         "baseURL": "http://TA-MBAir.local:11434/v1"
       },
@@ -26,7 +29,7 @@
           "name": "Expert Engineer (Coding)",
           "limit": {
             "context": 65536,
-            "output": 8192
+            "output": 16384
           },
           "body": {
             "num_ctx": 65536,
