@@ -34,7 +34,7 @@ ta:auditor     (Auditor) - 検証・セキュリティ監査・品質保証
 | モデル名 | 用途 | ベース | num_ctx | temperature | その他 | 備考 |
 |---|---|---|---|---|---|---|
 | ta:architect | Analyst（設計・レビュー・ADR・倫理分析） | gemma4:12b-nvfp4 | 65536 | 0.2 | SYSTEM プロンプト | 既定モデル。5 視点分析と倫理リスクの早期指摘を担当 |
-| ta:engineer | Coder（実装・コード生成・テスト生成・リファクタ） | qwen3.5:9b-nvfp4 | 65536 | 0.0 | stop `<\|im_end\|>`, `<\|endoftext\|>` | OpenCode 側で `think: false`, `presence_penalty: 0` を指定 |
+| ta:engineer | Coder（実装・コード生成・テスト生成・リファクタ） | qwen3.5:9b-nvfp4 | 65536 | 0.0 | stop `<\|im_end\|>`, `<\|endoftext\|>` | OpenCode 側で `reasoning_effort: "none"`, `presence_penalty: 0` を指定 |
 | ta:auditor | Auditor（検証・セキュリティ監査・品質保証） | qwen3.5:9b-nvfp4 | 65536 | 0.0 | stop `<\|im_end\|>`, `<\|endoftext\|>` | 敵対的レビュー、ADR 適合性の確認を担当 |
 
 ## 3. ペルソナ定義（Modelfile の SYSTEM プロンプト概要）
@@ -84,11 +84,11 @@ ta:auditor     (Auditor) - 検証・セキュリティ監査・品質保証
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "provider": {
+  "providers": {
     "ollama": {
-      "npm": "@ai-sdk/openai-compatible",
       "name": "Ollama (TA-MBAir)",
-      "options": {
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
         "baseURL": "http://TA-MBAir.local:11434/v1"
       },
       "models": {
@@ -112,9 +112,9 @@ ta:auditor     (Auditor) - 検証・セキュリティ監査・品質保証
             "context": 65536,
             "output": 8192
           },
-          "options": {
+          "body": {
             "num_ctx": 65536,
-            "think": false,
+            "reasoning_effort": "none",
             "temperature": 0,
             "presence_penalty": 0
           }
@@ -122,15 +122,16 @@ ta:auditor     (Auditor) - 検証・セキュリティ監査・品質保証
       }
     }
   },
-  "model": "ta:architect"
+  "model": "ollama/ta:architect"
 }
 ```
 
 ### 設定のポイント
 
-- 既定モデルは `ta:architect`（分析・設計フェーズを先に通す）
+- OpenCode 2.x のネイティブ形式（`providers` / `package` / `settings` / `body`）で記述する
+- 既定モデルは `ollama/ta:architect`（分析・設計フェーズを先に通す）
 - 3 モデルともコンテキストは 65536、最大出力は 8192
-- `ta:engineer` のみ `think: false`（Qwen の思考抑制を OpenCode 側で制御）
+- `ta:engineer` のみ `reasoning_effort: "none"`（Qwen の推論を OpenCode 側で OFF）
 - モデル名は `ta:` 名前空間で統一し、Ollama 上の派生モデル名と一致させる
 
 ## 5. 派生モデル作成手順（TA-MBAir.local）
@@ -206,7 +207,7 @@ PARAMETER stop "<|endoftext|>"
 | フェーズ | モデル | 備考 |
 |---|---|---|
 | 要求分析・設計・ADR・倫理レビュー | ta:architect | Think ON（既定）。まずここを通す |
-| 実装・コード生成・テスト生成 | ta:engineer | Think OFF（`options.think: false`）。ADR に厳密に従う |
+| 実装・コード生成・テスト生成 | ta:engineer | Think OFF（`body.reasoning_effort: "none"`）。ADR に厳密に従う |
 | 検証・セキュリティ監査・品質保証 | ta:auditor | 敵対的レビュー。Pass/Fail と修正点を報告 |
 
 推奨フロー: **Analyst（設計・ADR）→ Engineer（実装・テスト）→ Auditor（検証・監査）**。
@@ -216,9 +217,9 @@ PARAMETER stop "<|endoftext|>"
 
 - `ollama ps` の CONTEXT は実際にロードされた KV バッファサイズを表す
 - 一度小さいサイズでロードされたモデルのコンテキストはリサイズ不可
-- `think` は Renderer/PARSER 依存のため `PARAMETER think` は未対応。思考抑制は OpenCode 側の `options.think: false` で制御する
+- `think` は Renderer/PARSER 依存のため `PARAMETER think` は未対応。推論の抑制は OpenCode 側の `body.reasoning_effort: "none"` で制御する
 - KV キャッシュ肥大対策: 新規チャット開始、コンテキスト縮小、必要時のみ大コンテキストを使用
-- Go 側の `presence_penalty` は Modelfile ではなく OpenCode の `options` で指定している
+- Go 側の `presence_penalty` は Modelfile ではなく OpenCode の `body` で指定している
 
 ## 8. 技術仕様と環境構成
 

@@ -267,11 +267,12 @@ ollama list
 
 ```json
 {
-  "provider": {
+  "$schema": "https://opencode.ai/config.json",
+  "providers": {
     "ollama": {
-      "npm": "@ai-sdk/openai-compatible",
       "name": "Ollama (local)",
-      "options": {
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
         "baseURL": "http://<サーバーIP>:11434/v1"
       },
       "models": {
@@ -314,7 +315,7 @@ ollama list
 
 - `<サーバーIP>` はサーバーマシンの LAN IP またはホスト名に置き換えます（例: `TA-MBAir.local`）
 - モデル ID はサーバー上の `ollama list` のタグと一致させます
-- 接続には `@ai-sdk/openai-compatible` を使用します
+- 接続には V2 純正の `@opencode/ai/providers/openai-compatible` を使用します
 
 ## 5. 他の開発支援ツールからの接続
 
@@ -390,13 +391,13 @@ curl http://<サーバーIP>:11434/v1/models
 
 Windows（PowerShell）では `curl.exe` または `Invoke-RestMethod` を使用してください。
 
-opencode からモデルが選択・利用できることを確認します。
+opencode からモデルが選択・利用できることを確認します。CLI では `opencode models`、TUI では `/models` で一覧を確認できます。
 
 ## 7. 切り替え・モデル評価
 
-プロバイダを切り替える場合は `opencode.json` の `"model"` を書き換えるか、opencode 起動時のプロバイダ選択で Ollama 側を選びます。
+プロバイダを切り替える場合は `opencode.json` の `"model"` を `provider/model` 形式（例: `ollama/ta:engineer`）で書き換えるか、opencode 起動時のプロバイダ選択で Ollama 側を選びます。
 
-`opencode.json` を編集したら opencode を**リロード**して反映します。
+`opencode.json` の変更は OpenCode 2.x では自動的に反映されます。反映されない場合は `/reload` で設定を再読み込みしてください。
 
 ## 8. 参考
 
