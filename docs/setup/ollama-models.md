@@ -138,6 +138,8 @@ ta:auditor     (Auditor) - 検証・セキュリティ監査・品質保証
 - モデル名は `ta:` 名前空間で統一し、Ollama 上の派生モデル名と一致させる
 - `compatibility.maxTokensField: "max_tokens"` で他ツールとの互換性を確保
 
+> **Configuration Note:** このドキュメント内の設定例には、ローカル Ollama サーバーの IP アドレス（`TA-MBAir.local`）が含まれています。これは参考用であり、OpenCode を使用する前に自分の環境に合わせて設定を更新してください。
+
 ## 5. 派生モデル作成手順（TA-MBAir.local）
 
 TA-MBAir.local 上の `ta:*` モデルは、`models/` の以下の Modelfile から作成します。
