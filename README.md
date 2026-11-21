@@ -27,7 +27,9 @@ AI（LLM）を単なる「コード生成ツール」として使うだけでは
 1.  **開発標準（Development Standards）**: 開発の「ルール」を定義。
 2.  **モデル構成（Model Configuration）**: 役割ごとのモデル選定やパラメータ設定.
 
-> **Configuration Note:** The `opencode.json` file in the root directory contains example configuration with a local Ollama server IP address and model names. These are for reference only. Please update the configuration to match your environment before using OpenCode with your own Ollama server.
+
+
+> **Configuration Note:** `opencode.json` ファイルにはローカル Ollama サーバーの IP アドレスとモデル名が含まれています。これは参考用であり、OpenCode を使用する前に自分の環境に合わせて設定を更新してください。
 3.  **実践Tips（Pro-tips）**: 共創の質を向上させるための実践的な知見。
 
 ---
@@ -41,7 +43,9 @@ AI（LLM）を単なる「コード生成ツール」として使うだけでは
 - **モデル構成（Model Configuration）**: `docs/setup/ollama-models.md`
   - 役割ごとのモデル選定やパラメータ設定。Modelfile は `models/` に配置。
 
-> **Configuration Note:** The `opencode.json` file in the root directory contains example configuration with a local Ollama server IP address and model names. These are for reference only. Please update the configuration to match your environment before using OpenCode with your own Ollama server.
+
+
+> **Configuration Note:** `opencode.json` ファイルにはローカル Ollama サーバーの IP アドレスとモデル名が含まれています。これは参考用であり、OpenCode を使用する前に自分の環境に合わせて設定を更新してください。
 - **実践的なTips**: `docs/tips/`
   - コンテキスト圧縮や、AIとの共創におけるコツ。
 - **共創のプロセス（Persona & Process）**: `models/`
@@ -161,7 +165,9 @@ AIとの共創において、**「記憶の断絶」**は最大の敵です。
 - **モデル構成（Model Configuration）**: `docs/setup/ollama-models.md`
   - 役割ごとのモデル選定やパラメータ設定。Modelfile は `models/` に配置。
 
-> **Configuration Note:** The `opencode.json` file in the root directory contains example configuration with a local Ollama server IP address and model names. These are for reference only. Please update the configuration to match your environment before using OpenCode with your own Ollama server.
+
+
+> **Configuration Note:** `opencode.json` ファイルにはローカル Ollama サーバーの IP アドレスとモデル名が含まれています。これは参考用であり、OpenCode を使用する前に自分の環境に合わせて設定を更新してください。
 - **実践的なTips**: `docs/tips/`
   - コンテキスト圧縮や、AIとの共創におけるコツ。
 - **共創のプロセス（Persona & Process）**: `models/`
