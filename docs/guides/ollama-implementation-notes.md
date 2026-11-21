@@ -38,6 +38,8 @@ LaunchDaemon (`/Library/LaunchDaemons/com.ollama.serve.plist`) にて以下を�
 - `OLLAMA_KEEP_ALIVE=24h` はモデル保持期間
 - 両者は役割が異なる
 
+> **Configuration Note:** The example plist configuration contains a local user path (`/Users/ta000`). Please update this to match your environment before deploying the LaunchDaemon.
+
 ---
 
 ## KV キャッシュ肥大化問題
