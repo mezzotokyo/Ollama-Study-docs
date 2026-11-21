@@ -25,7 +25,9 @@ AI（LLM）を単なる「コード生成ツール」として使うだけでは
 主な柱となるのは、以下の3つの要素です。
 
 1.  **開発標準（Development Standards）**: 開発の「ルール」を定義。
-2.  **モデル構成（Model Configuration）**: 役割ごとのモデル選定やパラメータ設定。
+2.  **モデル構成（Model Configuration）**: 役割ごとのモデル選定やパラメータ設定.
+
+> **Configuration Note:** The `opencode.json` file in the root directory contains example configuration with a local Ollama server IP address and model names. These are for reference only. Please update the configuration to match your environment before using OpenCode with your own Ollama server.
 3.  **実践Tips（Pro-tips）**: 共創の質を向上させるための実践的な知見。
 
 ---
@@ -38,6 +40,8 @@ AI（LLM）を単なる「コード生成ツール」として使うだけでは
   - 開発フロー、ADR、検証基準など、開発の「ルール」を定義。
 - **モデル構成（Model Configuration）**: `docs/setup/ollama-models.md`
   - 役割ごとのモデル選定やパラメータ設定。Modelfile は `models/` に配置。
+
+> **Configuration Note:** The `opencode.json` file in the root directory contains example configuration with a local Ollama server IP address and model names. These are for reference only. Please update the configuration to match your environment before using OpenCode with your own Ollama server.
 - **実践的なTips**: `docs/tips/`
   - コンテキスト圧縮や、AIとの共創におけるコツ。
 - **共創のプロセス（Persona & Process）**: `models/`
@@ -156,6 +160,8 @@ AIとの共創において、**「記憶の断絶」**は最大の敵です。
   - 開発フロー、ADR、検証基準など、開発の「ルール」を定義。
 - **モデル構成（Model Configuration）**: `docs/setup/ollama-models.md`
   - 役割ごとのモデル選定やパラメータ設定。Modelfile は `models/` に配置。
+
+> **Configuration Note:** The `opencode.json` file in the root directory contains example configuration with a local Ollama server IP address and model names. These are for reference only. Please update the configuration to match your environment before using OpenCode with your own Ollama server.
 - **実践的なTips**: `docs/tips/`
   - コンテキスト圧縮や、AIとの共創におけるコツ。
 - **共創のプロセス（Persona & Process）**: `models/`

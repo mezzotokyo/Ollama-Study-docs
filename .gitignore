@@ -2,3 +2,10 @@
 .gitignore
 node_modules/
 opencode.json.bkup*
+~/.config/opencode/*.bak*
+
+# OpenCode config ファイル（IP アドレスとモデル名を含むため公開除外）
+opencode.json
+
+# test ディレクトリ全体（テスト環境、公開不要）
+test/
