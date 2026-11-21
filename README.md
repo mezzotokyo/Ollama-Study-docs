@@ -29,7 +29,6 @@ AI（LLM）を単なる「コード生成ツール」として使うだけでは
 
 
 
-> **Configuration Note:** `opencode.json` ファイルにはローカル Ollama サーバーの IP アドレスとモデル名が含まれています。これは参考用であり、OpenCode を使用する前に自分の環境に合わせて設定を更新してください。
 3.  **実践Tips（Pro-tips）**: 共創の質を向上させるための実践的な知見。
 
 ---
@@ -45,7 +44,6 @@ AI（LLM）を単なる「コード生成ツール」として使うだけでは
 
 
 
-> **Configuration Note:** `opencode.json` ファイルにはローカル Ollama サーバーの IP アドレスとモデル名が含まれています。これは参考用であり、OpenCode を使用する前に自分の環境に合わせて設定を更新してください。
 - **実践的なTips**: `docs/tips/`
   - コンテキスト圧縮や、AIとの共創におけるコツ。
 - **共創のプロセス（Persona & Process）**: `models/`
@@ -167,7 +165,6 @@ AIとの共創において、**「記憶の断絶」**は最大の敵です。
 
 
 
-> **Configuration Note:** `opencode.json` ファイルにはローカル Ollama サーバーの IP アドレスとモデル名が含まれています。これは参考用であり、OpenCode を使用する前に自分の環境に合わせて設定を更新してください。
 - **実践的なTips**: `docs/tips/`
   - コンテキスト圧縮や、AIとの共創におけるコツ。
 - **共創のプロセス（Persona & Process）**: `models/`
