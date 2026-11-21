@@ -39,8 +39,6 @@ LaunchDaemon (`/Library/LaunchDaemons/com.ollama.serve.plist`) にて以下を�
 - 両者は役割が異なる
 - **注意**: plist ファイル内のユーザー名（例：`/Users/ta000`）は実際の環境に合わせて変更してください。
 
-> **Configuration Note:** The example plist configuration contains a local user path (`/Users/ta000`). Please update this to match your environment before deploying the LaunchDaemon.
-
 ---
 
 ## KV キャッシュ肥大化問題
