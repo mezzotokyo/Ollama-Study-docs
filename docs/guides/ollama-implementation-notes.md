@@ -37,6 +37,7 @@ LaunchDaemon (`/Library/LaunchDaemons/com.ollama.serve.plist`) にて以下を�
 - `KeepAlive=true` は Ollama プロセスの自動再起動
 - `OLLAMA_KEEP_ALIVE=24h` はモデル保持期間
 - 両者は役割が異なる
+- **注意**: plist ファイル内のユーザー名（例：`/Users/ta000`）は実際の環境に合わせて変更してください。
 
 > **Configuration Note:** The example plist configuration contains a local user path (`/Users/ta000`). Please update this to match your environment before deploying the LaunchDaemon.
 
