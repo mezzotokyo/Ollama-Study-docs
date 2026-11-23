@@ -191,24 +191,23 @@ nssm remove Ollama confirm
 サーバーが常駐稼働した状態で、**サーバーマシン上**でモデルを確認・エイリアス作成します。
 
 ### 3.1 モデルの確認
-Mac B（iride サーバー）上のモデルは、サーバー上の `ollama list` で確認できます。
-
-> 本節（§3.1）は Mac B の構成表です。§4 の設定例とリポジトリ直下の `opencode.json` は Mac A 向け（`ta:*`・`192.168.100.203`）です。
+本リポジトリの `opencode.json` が参照するモデルは、Mac A 上の `ollama list` で確認できます。
 
 | opencode.json のモデル ID | 名前 | 備考 |
 |---------------------------|------|------|
-| `iride:technical_auditor` | Iride Technical Auditor (Review) | サーバー上のカスタムモデル |
-| `iride:expert_engineer` | Iride Expert Engineer (Coding) | サーバー上のカスタムモデル |
-| `iride:ethical_architect` | Iride Ethical Architect (Analysis) | サーバー上のカスタムモデル |
+| `ta:architect` | Ethical Architect (Analysis) | サーバー上のカスタムモデル |
+| `ta:auditor` | Technical Auditor (Review) | サーバー上のカスタムモデル |
+| `ta:engineer` | Expert Engineer (Coding) | サーバー上のカスタムモデル |
 | `qwen3.5:9b-nvfp4` | Qwen3.5 | サーバー上の MLX モデル |
 | `gemma4:12b-nvfp4` | Gemma4 | サーバー上の MLX モデル |
-| `granite4.1:3b` | Granite 3B (Light Weight) | 軽量モデル（V2 の `agents.title.model` 用） |
 
 ```sh
 ollama list
 ```
 
-> `iride:*` はシステムプロンプト等を組み込んだカスタムモデルです。別マシンで同じ構成を再現する場合は、各モデルの Modelfile も管理してください。
+> `ta:*` はシステムプロンプト等を組み込んだカスタムモデルです。別マシンで同じ構成を再現する場合は、各モデルの Modelfile も管理してください。
+>
+> Mac B では同じ3役が `iride:*` の名前で存在します（中身は同一で、digest が一致します）。Mac B には追加で `granite4.1:3b`（軽量モデル）も入っています。
 
 ### 3.2 エイリアス作成（context 制限の例）
 context 長を制限したエイリアスを作る場合は、Modelfile でベースモデルから派生させます。以下は例です（現在の `opencode.json` はエイリアスを使わず、サーバー側のモデルを直接参照しています）。
