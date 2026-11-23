@@ -1,7 +1,7 @@
 # Ollama モデル構成（統合）
 
-最終更新: 2026-11-07
-対象環境: TA-MBAir.local:11434（Ollama v0.40.15 / macOS + Apple Silicon MLX）
+最終更新: 2026-11-23
+対象環境: Mac A（192.168.100.203:11434）/ Mac B（192.168.100.201:11434）の2台構成（Ollama v0.40.16 / macOS + Apple Silicon MLX）
 対象リポジトリ: `.`（ドキュメントルート）
 
 ## 1. 概要
@@ -226,14 +226,20 @@ PARAMETER stop "<|endoftext|>"
 - `think` は Renderer/PARSER 依存のため `PARAMETER think` は未対応。推論の抑制は OpenCode 側の `body.reasoning_effort: "none"` で制御する
 - KV キャッシュ肥大対策: 新規チャット開始、コンテキスト縮小、必要時のみ大コンテキストを使用
 - Go 側の `presence_penalty` は Modelfile ではなく OpenCode の `body` で指定している
+- リクエスト時の `options.num_ctx` は MLX ランナーでは事実上効かない（2026-11-20 に実測）。コンテキスト長を制御できるのは Modelfile 側の `num_ctx` のみで、派生モデルは `num_ctx 65536` で作成する運用が正しい
+- `/api/create` でモデルを作る場合（0.40.16）は、旧来の Modelfile 文字列ではなく from／system／parameters の構造化形式で送る。CLI の `ollama create -f` は従来通り使える
 
 ## 8. 技術仕様と環境構成
 
-### 実行環境
+### 実行環境（2026-11-20 時点）
 
-- **Ollama ホスト**: `TA-MBAir.local:11434`
+- **Ollama**: 0.40.16（2026-11-07 時点のスナップショットでは 0.40.15）
+- **ホスト（2台構成）**:
+  - Mac A（32GB）: `192.168.100.203:11434`、派生モデルは `ta:*`
+  - Mac B（16GB）: `192.168.100.201:11434`、派生モデルは `iride:*`
+- **ネットワーク**: 各 Mac の LAN アドレスへ bind。Tailscale Serve を併用し、ユーザー自身の端末と Muse は Mac A 11435／Mac B 11436 経由で接続する。仕事仲間は L2TP/IPsec VPN 経由で LAN アドレスへ接続する従来形のまま
 - **Apple Silicon (MLX)**: `nvfp4` モデルを使用するため必須
-- **ネットワーク**: `OLLAMA_HOST=0.0.0.0:11434` により別マシンからのアクセスを許可
+- **派生モデルの同一性**: `ta:*` と `iride:*` は名前だけ異なり、3役とも digest が両台で一致する同一内容（2026-11-20 に Mac B の auditor の stop パラメーター欠けを解消して一致を確認）
 
 ### モデルの制約
 

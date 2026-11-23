@@ -8,7 +8,7 @@ LAN 内の 1 台を **常設の Ollama 推論サーバー**として構築し、
 - **サーバー**: 常時稼働する常設サーバー（ログアウト・再起動後も自動起動）
 - **プロバイダー**: Ollama（LM Studio は使用しない）
 - **API エンドポイント**: `http://<サーバーIP>:11434/v1`（OpenAI 互換）
-- **接続例**: `http://192.168.20.34:11434/v1`
+- **接続例**: `http://192.168.100.203:11434/v1`
 
 ## 1. 構成
 
@@ -19,7 +19,9 @@ LAN 内の 1 台を **常設の Ollama 推論サーバー**として構築し、
 └──────────────────┘                                   └──────────────────────┘
 ```
 
-Ollama は既定で `127.0.0.1:11434` にしかバインドしないため、**LAN からの接続には `OLLAMA_HOST=0.0.0.0:11434` の設定が必須**です。
+Ollama は既定で `127.0.0.1:11434` にしかバインドしないため、LAN からの接続には `OLLAMA_HOST` で待ち受けアドレスを指定します。2026-11-07 時点の版では `0.0.0.0:11434`（全インターフェース）としていましたが、現行構成では台ごとに LAN アドレスへ bind しています：Mac A（32GB）は `192.168.100.203:11434`、Mac B（16GB）は `192.168.100.201:11434`。LAN bind の場合、動作確認は localhost 宛てではなく、その LAN アドレス宛てに行います（localhost には何も待ち受けていないため、確認が失敗に見える）。
+
+あわせて、ユーザー自身の端末と Muse 向けに Tailscale Serve を併用しています（Mac A は 11435、Mac B は 11436 から各 Mac の LAN アドレスの 11434 へ転送）。仕事仲間は L2TP/IPsec VPN 経由で LAN アドレスへ接続する従来形のままで、Tailscale の導入は求めていません。
 
 本手順は**常駐化（起動時自動起動・ログアウト後も稼働）を前提**に記述します。
 
@@ -63,7 +65,7 @@ launchctl bootout gui/$(id -u)/com.ollama.ollama 2>/dev/null || true
         <key>HOME</key>
         <string>/Users/YOUR_USERNAME</string>
         <key>OLLAMA_HOST</key>
-        <string>0.0.0.0:11434</string>
+        <string>192.168.100.203:11434</string>
     	<key>OLLAMA_KEEP_ALIVE</key>
     	<string>24h</string>
     </dict>
@@ -84,6 +86,8 @@ launchctl bootout gui/$(id -u)/com.ollama.ollama 2>/dev/null || true
 </plist>
 ```
 
+> - 上記の `OLLAMA_HOST` は Mac A の例です。Mac B では `192.168.100.201:11434` を使います。
+> - `0.0.0.0` へのバインドは全ネットワークインターフェースに公開します。現行構成では LAN アドレスへの bind に切り替えたため、この例のまま `0.0.0.0` を使うと想定と異なる待ち受けになります。
 > - `YOUR_USERNAME` は Ollama を実行する実際のユーザー名に置き換えてください（例: `alice`）。
 > - `launchctl setenv` で設定した環境変数は LaunchDaemon には引き継がれません。`OLLAMA_HOST` は plist 内の `EnvironmentVariables` に直接記載します。
 > - `UserName` と `HOME` を指定しているため、デーモンはそのユーザーとして動作し、モデルは既定で `~/.ollama/models` に格納されます。別の場所に置く場合は `OLLAMA_MODELS` を `EnvironmentVariables` に追加してください。
@@ -187,7 +191,9 @@ nssm remove Ollama confirm
 サーバーが常駐稼働した状態で、**サーバーマシン上**でモデルを確認・エイリアス作成します。
 
 ### 3.1 モデルの確認
-本リポジトリの `opencode.json` が参照するモデルは、iride サーバー上の `ollama list` で確認できます。
+Mac B（iride サーバー）上のモデルは、サーバー上の `ollama list` で確認できます。
+
+> 本節（§3.1）は Mac B の構成表です。§4 の設定例とリポジトリ直下の `opencode.json` は Mac A 向け（`ta:*`・`192.168.100.203`）です。
 
 | opencode.json のモデル ID | 名前 | 備考 |
 |---------------------------|------|------|
@@ -255,70 +261,50 @@ ollama list
   "$schema": "https://opencode.ai/config.json",
   "providers": {
     "ollama": {
-      "name": "Ollama (iride)",
+      "name": "Ollama (TA-MBAir)",
+      "package": "@opencode/ai/providers/openai-compatible",
+      "compatibility": {
+        "maxTokensField": "max_tokens"
+      },
       "settings": {
-        "baseURL": "http://<サーバーIP>:11434/v1"
+        "baseURL": "http://192.168.100.203:11434/v1"
       },
       "models": {
-        "iride:technical_auditor": {
-          "name": "Iride Technical Auditor (Review)",
-          "limit": {
-            "context": 32768,
-            "output": 8192
-          }
-        },
-        "iride:expert_engineer": {
-          "name": "Iride Expert Engineer (Coding)",
-          "limit": {
-            "context": 32768,
-            "output": 8192
-          },
-          "body": {
-            "temperature": 0,
-            "presence_penalty": 0
-          }
-        },
-        "iride:ethical_architect": {
-          "name": "Iride Ethical Architect (Analysis)",
+        "ta:architect": {
+          "name": "Ethical Architect (Analysis)",
           "limit": {
             "context": 65536,
             "output": 8192
           }
         },
-        "qwen3.5:9b-nvfp4": {
-          "name": "Qwen3.5",
+        "ta:auditor": {
+          "name": "Technical Auditor (Review)",
           "limit": {
-            "context": 4096,
+            "context": 65536,
             "output": 8192
           }
         },
-        "gemma4:12b-nvfp4": {
-          "name": "Gemma4",
+        "ta:engineer": {
+          "name": "Expert Engineer (Coding)",
           "limit": {
-            "context": 4096,
-            "output": 8192
-          }
-        },
-        "granite4.1:3b": {
-          "name": "Granite 3B (Light Weight)",
-          "limit": {
-            "context": 4096,
-            "output": 8192
+            "context": 65536,
+            "output": 16384
+          },
+          "body": {
+            "num_ctx": 65536,
+            "reasoning_effort": "none",
+            "temperature": 0,
+            "presence_penalty": 0
           }
         }
       }
     }
   },
-  "model": "ollama/iride:expert_engineer",
-  "agents": {
-    "title": {
-      "model": "ollama/granite4.1:3b"
-    }
-  }
+  "model": "ollama/ta:architect"
 }
 ```
 
-- `<サーバーIP>` はサーバーマシンの LAN IP に置き換えます（例: `192.168.20.34`）
+- この例は Mac A 向けで、リポジトリ直下の `opencode.json` と同一内容です。Mac B を使う場合は、`baseURL` を `http://192.168.100.201:11434/v1` に、モデル名を `iride:*` に読み替えます
 - モデル ID はサーバー上の `ollama list` のタグと一致させます
 - V2 は組み込みの Ollama プロバイダを使用します。`settings.baseURL` には OpenAI 互換 API の URL（`/v1` を含む）を指定します
 - サンプリングパラメータ（`temperature` など）はモデルの `body` に置きます。`settings` はプロバイダパッケージの設定用です
