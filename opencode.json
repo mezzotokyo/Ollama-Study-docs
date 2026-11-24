@@ -46,7 +46,5 @@
   "permissions": [
     { "action": "shell", "resource": "git commit *", "effect": "ask" }
   ],
-  "policies": [
-    { "action": "tool.use", "resource": "shell:git push *", "effect": "deny" }
-  ]
+  "policies": []
 }
