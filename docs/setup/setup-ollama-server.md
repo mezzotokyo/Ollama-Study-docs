@@ -259,7 +259,7 @@ ollama list
 {
   "$schema": "https://opencode.ai/config.json",
   "providers": {
-    "ollama": {
+    "ollama-ta": {
       "name": "Ollama (TA-MBAir)",
       "package": "@opencode/ai/providers/openai-compatible",
       "compatibility": {
@@ -299,7 +299,7 @@ ollama list
       }
     }
   },
-  "model": "ollama/ta:architect"
+  "model": "ollama-ta/ta:architect"
 }
 ```
 
