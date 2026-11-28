@@ -48,6 +48,8 @@ AI（LLM）を単なる「コード生成ツール」として使うだけでは
   - コンテキスト圧縮や、AIとの共創におけるコツ。
 - **共創のプロセス（Persona & Process）**: `models/`
   - ペルソナ定義（Modelfile）は `models/`。共創の過程は `docs/notes/` を参照。
+- **運用上の注意と設定（Safe Operation）**: `opencode-usage-notes.md`
+  - OpenCode を安全に使うための3層の対策。permissions／policies による強制、AGENTS.md の運用ルール、プロバイダ設定の注意。
 
 ---
 
@@ -164,11 +166,12 @@ AIとの共創において、**「記憶の断絶」**は最大の敵です。
   - 役割ごとのモデル選定やパラメータ設定。Modelfile は `models/` に配置。
 
 
-
 - **実践的なTips**: `docs/tips/`
   - コンテキスト圧縮や、AIとの共創におけるコツ。
 - **共創のプロセス（Persona & Process）**: `models/`
   - ペルソナ定義（Modelfile）は `models/`。共創の過程は `docs/notes/` を参照。
+- **運用上の注意と設定（Safe Operation）**: `opencode-usage-notes.md`
+  - OpenCode を安全に使うための3層の対策。permissions／policies による強制、AGENTS.md の運用ルール、プロバイダ設定の注意。
 
 ---
 
